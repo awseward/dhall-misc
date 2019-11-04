@@ -1,6 +1,3 @@
-let Bool/not =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v11.1.0/Prelude/Bool/not sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
-
 let List/filter =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/v11.1.0/Prelude/List/filter sha256:8ebfede5bbfe09675f246c33eb83964880ac615c4b1be8d856076fdbc4b26ba6
 
@@ -16,8 +13,11 @@ let Map/Entry =
 let Map/map =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/v11.1.0/Prelude/Map/map sha256:23e09b0b9f08649797dfe1ca39755d5e1c7cad2d0944bdd36c7a0bf804bde8d0
 
-let Optional/null =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v11.1.0/Prelude/Optional/null sha256:efc43103e49b56c5bf089db8e0365bbfc455b8a2f0dc6ee5727a3586f85969fd
+let Optional/some =
+      let Optional/any =
+            https://raw.githubusercontent.com/dhall-lang/dhall-lang/v11.1.0/Prelude/Optional/any sha256:0a637c0f2cc7d30b8f0bca021d2ee1ad1213fb9d9712c669b29feab66a590eaf
+      
+      in  λ(t : Type) → λ(a : Optional t) → Optional/any t (λ(_ : t) → True) a
 
 let Optional/default =
       https://raw.githubusercontent.com/dhall-lang/dhall-lang/v11.1.0/Prelude/Optional/default sha256:8f802473931b605422b545d7b81de20dbecb38f2ae63950c13f5381865a7f012
@@ -34,7 +34,7 @@ let tryShow =
       → let filtered =
               List/filter
                 KOptV
-                (λ(kOv : KOptV) → Bool/not (Optional/null Text kOv.mapValue))
+                (λ(kOv : KOptV) → Optional/some Text kOv.mapValue)
                 map
         
         let someValKVs =
@@ -45,9 +45,11 @@ let tryShow =
                 (Optional/default Text "")
                 filtered
         
-        in        if Bool/not (List/null KV someValKVs)
+        in        if List/null KV someValKVs
             
-            then  let sep = "\n"
+            then  None Text
+            
+            else  let sep = "\n"
                   
                   in  Some
                         ( Text/concatSep
@@ -63,8 +65,6 @@ let tryShow =
                                 someValKVs
                             )
                         )
-            
-            else  None Text
 
 let show = λ(map : List KOptV) → Optional/default Text "" (tryShow map)
 

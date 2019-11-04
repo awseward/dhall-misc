@@ -70,8 +70,10 @@ let _example =
       
       let expected = "FOO=this_is_foo"
       
-      let _tryShow = assert : tryShow map ≡ Some expected
+      let _ = assert : tryShow map ≡ Some expected
       
-      in assert : show map ≡ expected
+      let _ = assert : show map ≡ expected
+      
+      in  {}
 
 in  { tryShow = tryShow }

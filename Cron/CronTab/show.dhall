@@ -52,6 +52,8 @@ let _example =
             * 0 * * * happens every midnight
             0 * * * * happens every minute''
       
-      in  assert : show tab ≡ expected
+      let _ = assert : show tab ≡ expected
+      
+      in  {}
 
 in  show

@@ -15,9 +15,9 @@ let _example =
       let job =
               { when = CronExpr::{=}, what = "foo", enabled = True }
             : CronJob.Type
-      
+
       let _ = assert : show job ≡ "* * * * * foo"
-      
+
       in  {}
 
 in  show

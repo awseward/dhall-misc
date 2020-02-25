@@ -12,4 +12,4 @@ jobs:
     - name: Typecheck Dhall files
       uses: ./.github/actions/dhall-typecheck
     - name: Lint Dhall files
-      uses: ./.github/actions/dhall-lint
+      uses: awseward/dhall-lint-action@master

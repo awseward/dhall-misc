@@ -1,5 +1,0 @@
-name: 'Dhall Typecheck'
-description: 'Typecheck all .dhall files'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'

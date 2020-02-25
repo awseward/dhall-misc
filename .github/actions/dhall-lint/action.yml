@@ -1,5 +1,0 @@
-name: 'Dhall lint'
-description: 'Run `dhall lint` on all .dhall files'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'

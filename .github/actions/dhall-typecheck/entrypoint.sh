@@ -18,5 +18,3 @@ if [ $(( $(wc -l < "${temp_file}") )) != 0 ]; then
   cat "${temp_file}"
   exit 1
 fi
-
-

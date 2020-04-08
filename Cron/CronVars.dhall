@@ -79,4 +79,4 @@ let _example =
 
       in  {}
 
-in  { tryShow = tryShow }
+in  { tryShow }

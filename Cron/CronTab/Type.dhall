@@ -8,9 +8,9 @@ in  { Type =
         , jobs : List CronJob.Type
         }
     , default =
-        { SHELL = None Text
-        , LOGNAME = None Text
-        , MAILTO = None Text
-        , HOME = None Text
-        }
+      { SHELL = None Text
+      , LOGNAME = None Text
+      , MAILTO = None Text
+      , HOME = None Text
+      }
     }

@@ -64,7 +64,7 @@ let mkAction =
                     , id = Some "cache-choosenim"
                     , `with` = Some GHA.With::{
                       , path = Some "~/.choosenim"
-                      , key = Some "\${{ runner.os }}-choosenim-stable"
+                      , key = Some "\${{ runner.os }}-choosenim"
                       }
                     }
                 , uses
@@ -74,7 +74,7 @@ let mkAction =
                     , id = Some "cache-nimble"
                     , `with` = Some GHA.With::{
                       , path = Some "~/.nimble"
-                      , key = Some "\${{ runner.os }}-nimble-stable"
+                      , key = Some "\${{ runner.os }}-nimble"
                       }
                     }
                 , uses

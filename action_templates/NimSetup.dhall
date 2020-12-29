@@ -4,20 +4,17 @@ let uses = GHA.Step.uses
 
 let Opts =
       { Type =
-          { nimVersion : Text
-          , setupNimAction : Text
-          , setupNimActionVersion : Text
-          }
+          { nimVersion : Text, setupAction : Text, setupActionVersion : Text }
       , default =
         { nimVersion = "1.4.2"
-        , setupNimAction = "jiro4989/setup-nim-action"
-        , setupNimActionVersion = "1.2.3"
+        , setupAction = "jiro4989/setup-nim-action"
+        , setupActionVersion = "1.2.3"
         }
       }
 
 let mkSteps =
       λ(opts : Opts.Type) →
-          [ uses GHA.Uses::{ uses = "actions/checkout@v2" }
+          [ (./gha/steps.dhall).checkout
           , uses
               GHA.Uses::{
               , name = Some "Cache choosenim"
@@ -40,7 +37,7 @@ let mkSteps =
               }
           , uses
               GHA.Uses::{
-              , uses = "${opts.setupNimAction}@${opts.setupNimActionVersion}"
+              , uses = "${opts.setupAction}@${opts.setupActionVersion}"
               , `with` = Some GHA.With::{
                 , nim-version = Some "${opts.nimVersion}"
                 }

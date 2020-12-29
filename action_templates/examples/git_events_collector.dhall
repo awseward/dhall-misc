@@ -1,14 +1,10 @@
-let NBA = ../NimBuildApp.dhall
-
-let mkJob = NBA.mkJob
-
-let NimBuildApp = NBA.NimBuildApp
+let Build = ../NimBuild.dhall
 
 in  { name = "CI"
     , on = [ "push" ]
     , jobs =
-      [ mkJob
-          NimBuildApp::{
+      [ Build.mkJob
+          Build.Opts::{
           , platforms = [ "macos-latest" ]
           , bin = "git_events_collector"
           }

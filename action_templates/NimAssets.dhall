@@ -6,7 +6,7 @@ let NimSetup = ./NimSetup.dhall
 
 let run = GHA.Step.run
 
-let NimAssets =
+let Opts =
       { Type =
           { platforms : List Text
           , nimSetup : NimSetup.Opts.Type
@@ -16,7 +16,7 @@ let NimAssets =
       }
 
 let mkJob =
-      λ(opts : NimAssets.Type) →
+      λ(opts : Opts.Type) →
         { mapKey = "check-assets"
         , mapValue =
           { runs-on = opts.platforms
@@ -32,4 +32,4 @@ let mkJob =
           }
         }
 
-in  { mkJob, NimAssets }
+in  { mkJob, Opts }

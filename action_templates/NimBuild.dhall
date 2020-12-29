@@ -6,7 +6,7 @@ let NimSetup = ./NimSetup.dhall
 
 let run = GHA.Step.run
 
-let NimBuildApp =
+let Opts =
       { Type =
           { platforms : List Text
           , bin : Text
@@ -17,7 +17,7 @@ let NimBuildApp =
       }
 
 let mkJob =
-      λ(opts : NimBuildApp.Type) →
+      λ(opts : Opts.Type) →
         { mapKey = "build-${opts.bin}"
         , mapValue =
           { runs-on = opts.platforms
@@ -35,4 +35,4 @@ let mkJob =
           }
         }
 
-in  { mkJob, NimBuildApp }
+in  { mkJob, Opts }

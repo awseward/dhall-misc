@@ -1,31 +1,25 @@
-let NA = ../NimAssets.dhall
+let Assets = ../NimAssets.dhall
 
-let NBA = ../NimBuildApp.dhall
+let Build = ../NimBuild.dhall
 
-let ND = ../NimDocs.dhall
-
-let NimAssets = NA.NimAssets
-
-let NimBuildApp = NBA.NimBuildApp
-
-let NimDocs = ND.NimDocs
+let Docs = ../NimDocs.dhall
 
 in  { name = "CI"
     , on.pull_request.branches = [ "master" ]
     , jobs =
-      [ NA.mkJob NimAssets::{ platforms = [ "macos-latest" ] }
-      , NBA.mkJob
-          NimBuildApp::{
+      [ Assets.mkJob Assets.Opts::{ platforms = [ "macos-latest" ] }
+      , Build.mkJob
+          Build.Opts::{
           , platforms = [ "ubuntu-latest" ]
           , bin = "web"
           , nimbleFlags = "--define:release --define:useStdLib"
           }
-      , NBA.mkJob
-          NimBuildApp::{
+      , Build.mkJob
+          Build.Opts::{
           , platforms = [ "macos-latest" ]
           , bin = "call_status_checker"
           , nimbleFlags = "--define:release --define:ssl"
           }
-      , ND.mkJob NimDocs::{ platforms = [ "ubuntu-latest" ] }
+      , Docs.mkJob Docs.Opts::{ platforms = [ "ubuntu-latest" ] }
       ]
     }

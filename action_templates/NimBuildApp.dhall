@@ -1,6 +1,3 @@
--- NOTE: The "calling" code is the `in` part of this file. It's based on what's
---       currently in https://github.com/awseward/call_status/blob/66ed79f733a9f4d78758bb16bbf96575cf6a7f38/.github/workflows/ci.yml#L35-L77
---
 let GHA =
       let With =
             { Type =
@@ -95,17 +92,4 @@ let mkAction =
           }
         }
 
-in  [ mkAction
-        NimBuildApp::{
-        , platforms = [ "ubuntu-latest" ]
-        , bin = "web"
-        , nimVersion = "1.4.0"
-        , nimbleBuildFlags = "--define:release --define:useStdLib"
-        }
-    , mkAction
-        NimBuildApp::{
-        , platforms = [ "macos-latest" ]
-        , bin = "call_status_checker"
-        , nimbleBuildFlags = "--define:release --define:ssl"
-        }
-    ]
+in  { mkAction, NimBuildApp }

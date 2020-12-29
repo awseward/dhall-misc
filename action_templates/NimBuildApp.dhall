@@ -1,6 +1,38 @@
 -- NOTE: The "calling" code is the `in` part of this file. It's based on what's
 --       currently in https://github.com/awseward/call_status/blob/66ed79f733a9f4d78758bb16bbf96575cf6a7f38/.github/workflows/ci.yml#L35-L77
 --
+let GHA =
+      let With =
+            { Type =
+                { path : Optional Text
+                , key : Optional Text
+                , nim-version : Optional Text
+                }
+            , default =
+              { path = None Text, key = None Text, nim-version = None Text }
+            }
+
+      let Uses =
+            { Type =
+                { name : Optional Text
+                , uses : Text
+                , id : Optional Text
+                , `with` : Optional With.Type
+                }
+            , default =
+              { name = None Text, id = None Text, `with` = None With.Type }
+            }
+
+      let Run = { Type = { run : Text }, default.run = "FIXME" }
+
+      let Step = < uses : Uses.Type | run : Run.Type >
+
+      in  { With, Uses, Run, Step }
+
+let uses = GHA.Step.uses
+
+let run = GHA.Step.run
+
 let NimBuildApp =
       { Type =
           { platforms : List Text
@@ -18,71 +50,48 @@ let NimBuildApp =
         }
       }
 
-let With =
-      { Type =
-          { path : Optional Text
-          , key : Optional Text
-          , nim-version : Optional Text
-          }
-      , default = { path = None Text, key = None Text, nim-version = None Text }
-      }
-
-let Use =
-      { Type =
-          { name : Optional Text
-          , uses : Text
-          , id : Optional Text
-          , `with` : Optional With.Type
-          }
-      , default = { name = None Text, id = None Text, `with` = None With.Type }
-      }
-
-let Run = { Type = { run : Text }, default.run = "FIXME" }
-
-let Step = < use : Use.Type | run : Run.Type >
-
 let mkAction =
       λ(nba : NimBuildApp.Type) →
         { mapKey = "build-${nba.bin}"
         , mapValue =
           { runs-on = nba.platforms
           , steps =
-                [ Step.use Use::{ uses = "actions/checkout@v2" }
-                , Step.use
-                    Use::{
+                [ uses GHA.Uses::{ uses = "actions/checkout@v2" }
+                , uses
+                    GHA.Uses::{
                     , name = Some "Cache choosenim"
                     , uses = "actions/cache@v1"
                     , id = Some "cache-choosenim"
-                    , `with` = Some With::{
+                    , `with` = Some GHA.With::{
                       , path = Some "~/.choosenim"
                       , key = Some "\${{ runner.os }}-choosenim-stable"
                       }
                     }
-                , Step.use
-                    Use::{
+                , uses
+                    GHA.Uses::{
                     , name = Some "Cache nimble"
                     , uses = "actions/cache@v1"
                     , id = Some "cache-nimble"
-                    , `with` = Some With::{
+                    , `with` = Some GHA.With::{
                       , path = Some "~/.nimble"
                       , key = Some "\${{ runner.os }}-nimble-stable"
                       }
                     }
-                , Step.use
-                    Use::{
+                , uses
+                    GHA.Uses::{
                     , uses =
                         "${nba.setupNimAction}@${nba.setupNimActionVersion}"
-                    , `with` = Some With::{
+                    , `with` = Some GHA.With::{
                       , nim-version = Some "${nba.nimVersion}"
                       }
                     }
-                , Step.run
-                    Run::{
+                , run
+                    GHA.Run::{
                     , run =
                         "nimble --stacktrace:on --linetrace:on ${nba.nimbleBuildFlags} build --accept ${nba.bin}"
                     }
                 ]
-              : List Step
+              : List GHA.Step
           }
         }
 

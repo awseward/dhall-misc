@@ -1,12 +1,16 @@
-let import = ../NimBuildApp.dhall
+let NBA = ../NimBuildApp.dhall
 
-let mkAction = import.mkAction
+let mkJob = NBA.mkJob
 
-let NimBuildApp = import.NimBuildApp
+let NimBuildApp = NBA.NimBuildApp
 
-in  [ mkAction
-        NimBuildApp::{
-        , platforms = [ "macos-latest" ]
-        , bin = "git_events_collector"
-        }
-    ]
+in  { name = "CI"
+    , on = [ "push" ]
+    , jobs =
+      [ mkJob
+          NimBuildApp::{
+          , platforms = [ "macos-latest" ]
+          , bin = "git_events_collector"
+          }
+      ]
+    }

@@ -6,10 +6,9 @@ let NimSetup = ./NimSetup.dhall
 
 let run = GHA.Step.run
 
-let NimBuildApp =
+let NimDocs =
       { Type =
           { platforms : List Text
-          , bin : Text
           , nimSetup : NimSetup.Opts.Type
           , nimbleFlags : Text
           }
@@ -17,8 +16,8 @@ let NimBuildApp =
       }
 
 let mkJob =
-      λ(opts : NimBuildApp.Type) →
-        { mapKey = "build-${opts.bin}"
+      λ(opts : NimDocs.Type) →
+        { mapKey = "docs"
         , mapValue =
           { runs-on = opts.platforms
           , steps =
@@ -27,12 +26,12 @@ let mkJob =
                 [ NimSetup.mkSteps opts.nimSetup
                 , [ run
                       GHA.Run::{
-                      , run =
-                          "nimble --stacktrace:on --linetrace:on ${opts.nimbleFlags} build --accept ${opts.bin}"
+                      , run = "nimble ${opts.nimbleFlags} install --accept"
                       }
+                  , run GHA.Run::{ run = "nimble docs" }
                   ]
                 ]
           }
         }
 
-in  { mkJob, NimBuildApp }
+in  { mkJob, NimDocs }

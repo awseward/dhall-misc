@@ -6,10 +6,9 @@ let NimSetup = ./NimSetup.dhall
 
 let run = GHA.Step.run
 
-let NimBuildApp =
+let NimAssets =
       { Type =
           { platforms : List Text
-          , bin : Text
           , nimSetup : NimSetup.Opts.Type
           , nimbleFlags : Text
           }
@@ -17,22 +16,20 @@ let NimBuildApp =
       }
 
 let mkJob =
-      λ(opts : NimBuildApp.Type) →
-        { mapKey = "build-${opts.bin}"
+      λ(opts : NimAssets.Type) →
+        { mapKey = "check-assets"
         , mapValue =
           { runs-on = opts.platforms
           , steps =
               concat
                 GHA.Step
                 [ NimSetup.mkSteps opts.nimSetup
-                , [ run
-                      GHA.Run::{
-                      , run =
-                          "nimble --stacktrace:on --linetrace:on ${opts.nimbleFlags} build --accept ${opts.bin}"
-                      }
+                , [ run GHA.Run::{ run = "nimble install --accept nimassets" }
+                  , run GHA.Run::{ run = "nimble ${opts.nimbleFlags} assets" }
+                  , run GHA.Run::{ run = "git diff --exit-code --color" }
                   ]
                 ]
           }
         }
 
-in  { mkJob, NimBuildApp }
+in  { mkJob, NimAssets }

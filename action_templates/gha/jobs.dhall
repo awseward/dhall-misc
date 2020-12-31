@@ -18,4 +18,9 @@ let Run = { Type = Common.Type ⩓ { run : Text }, default = Common.default }
 
 let Step = < uses : Uses.Type | run : Run.Type >
 
+let _ =
+        assert
+      :   Run::{ id = Some "foo", run = "bar" }
+        ≡ Common.default ⫽ { id = Some "foo", run = "bar" }
+
 in  { Uses, Run, Step }

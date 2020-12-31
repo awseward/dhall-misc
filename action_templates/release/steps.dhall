@@ -84,4 +84,4 @@ let mkSteps =
             }
         ]
 
-in  { mkSteps }
+in  { mkSteps, Opts }

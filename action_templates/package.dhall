@@ -4,4 +4,5 @@
 , NimBuild = ./NimBuild.dhall
 , NimDocs = ./NimDocs.dhall
 , NimSetup = ./NimSetup.dhall
+, release = ./release/steps.dhall
 }

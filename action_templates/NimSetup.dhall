@@ -20,27 +20,21 @@ let mkSteps =
               , name = Some "Cache choosenim"
               , uses = "actions/cache@v1"
               , id = Some "cache-choosenim"
-              , `with` = Some GHA.With::{
-                , path = Some "~/.choosenim"
-                , key = Some "\${{ runner.os }}-choosenim"
-                }
+              , `with` = toMap
+                  { path = "~/.choosenim", key = "\${{ runner.os }}-choosenim" }
               }
           , uses
               GHA.Uses::{
               , name = Some "Cache nimble"
               , uses = "actions/cache@v1"
               , id = Some "cache-nimble"
-              , `with` = Some GHA.With::{
-                , path = Some "~/.nimble"
-                , key = Some "\${{ runner.os }}-nimble"
-                }
+              , `with` = toMap
+                  { path = "~/.nimble", key = "\${{ runner.os }}-nimble" }
               }
           , uses
               GHA.Uses::{
               , uses = "${opts.setupAction}@${opts.setupActionVersion}"
-              , `with` = Some GHA.With::{
-                , nim-version = Some "${opts.nimVersion}"
-                }
+              , `with` = toMap { nim-version = "${opts.nimVersion}" }
               }
           ]
         : List GHA.Step

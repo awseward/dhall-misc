@@ -1,17 +1,20 @@
-let Map = (../imports.dhall).Map
+let Map_ =
+      let Map = (../imports.dhall).Map
 
-let Map_ = Map.Type Text Text
+      in  { Type = Map.Type Text Text, empty = Map.empty Text Text }
 
-let empty_ = Map.empty Text Text
+let Env = Map_
+
+let With = Map_
 
 let Common =
-      { Type = { name : Optional Text, id : Optional Text, env : Map_ }
-      , default = { name = None Text, id = None Text, env = empty_ }
+      { Type = { name : Optional Text, id : Optional Text, env : Env.Type }
+      , default = { name = None Text, id = None Text, env = Env.empty }
       }
 
 let Uses =
-      { Type = Common.Type ⩓ { uses : Text, `with` : Map_ }
-      , default = Common.default ⫽ { `with` = empty_ }
+      { Type = Common.Type ⩓ { uses : Text, `with` : With.Type }
+      , default = Common.default ⫽ { `with` = With.empty }
       }
 
 let Run = { Type = Common.Type ⩓ { run : Text }, default = Common.default }
@@ -23,4 +26,4 @@ let _ =
       :   Run::{ id = Some "foo", run = "bar" }
         ≡ Common.default ⫽ { id = Some "foo", run = "bar" }
 
-in  { Uses, Run, Step }
+in  { Env, Run, Step, Uses, With }

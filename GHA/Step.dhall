@@ -57,15 +57,16 @@ let mkUses =
         let uses_ = uses ⫽ { uses = Some uses.uses } in Step::(common ⫽ uses_)
 
 let _ =
-        mkUses
-          Common::{ id = Some "text" }
-          Uses::{ uses = "foo/bar@v1", `with` = toMap { answer = "42" } }
-      ≡ Step::{
-        , run = None Text
-        , id = Some "test"
-        , uses = Some "foo/bar@v1"
-        , `with` = toMap { answer = "42" }
-        }
+        assert
+      :   mkUses
+            Common::{ id = Some "text" }
+            Uses::{ uses = "foo/bar@v1", `with` = toMap { answer = "42" } }
+        ≡ Step::{
+          , run = None Text
+          , id = Some "test"
+          , uses = Some "foo/bar@v1"
+          , `with` = toMap { answer = "42" }
+          }
 
 let export = Step ⫽ { Common, Uses, mkRun, mkUses }
 

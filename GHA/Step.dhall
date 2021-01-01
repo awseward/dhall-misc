@@ -59,7 +59,7 @@ let mkUses =
 let _ =
         assert
       :   mkUses
-            Common::{ id = Some "text" }
+            Common::{ id = Some "test" }
             Uses::{ uses = "foo/bar@v1", `with` = toMap { answer = "42" } }
         ≡ Step::{
           , run = None Text

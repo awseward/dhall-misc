@@ -67,4 +67,4 @@ let _ =
         , `with` = toMap { answer = "42" }
         }
 
-in  Step ⫽ { Common, mkRun, mkUses }
+in  Step ⫽ { Common, Uses, mkRun, mkUses }

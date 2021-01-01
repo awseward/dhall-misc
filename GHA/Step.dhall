@@ -67,4 +67,8 @@ let _ =
         , `with` = toMap { answer = "42" }
         }
 
-in  Step ⫽ { Common, Uses, mkRun, mkUses }
+let export = Step ⫽ { Common, Uses, mkRun, mkUses }
+
+let _ = assert : export.Uses.default ≡ Uses.default
+
+in  export

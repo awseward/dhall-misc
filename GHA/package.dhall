@@ -1,1 +1,5 @@
-{ Job = ./Job.dhall, Service = ./Service.dhall, Step = ./Step.dhall }
+{ Job = ./Job.dhall
+, Service = ./Service.dhall
+, Step = ./Step.dhall
+, Workflow = ./Workflow.dhall
+}

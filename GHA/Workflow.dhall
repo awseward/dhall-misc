@@ -1,18 +1,3 @@
-{-
-
-TODO Get `on` properly typed and working
-
-  There's kind of a lot to it, so I'm just leaving it plainly as Text for now.
-  For the complexity, see the following fragments on the API reference page
-
-  https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions:
-    - #on
-    - #onevent_nametypes
-    - #onpushpull_requestbranchestags
-    - #onpushpull_requestpaths
-    - #onschedule
-
--}
 let imports = ./imports.dhall
 
 let Defaults = ./Defaults.dhall
@@ -23,9 +8,11 @@ let Job = ./Job.dhall
 
 let Map = imports.Map
 
+let On = ./On.dhall
+
 in  { Type =
         { name : Text
-        , on : Text
+        , on : On.Type
         , env : Env.Type
         , defaults : Defaults.Type
         , jobs : Map.Type Text Job.Type

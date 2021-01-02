@@ -1,3 +1,5 @@
+-- DEPRECATED: prefer nim/Setup.dhall
+--
 let GHA = ./gha/jobs.dhall
 
 let uses = GHA.Step.uses

@@ -4,11 +4,15 @@ let Step = GHA.Step
 
 let With = { Type = { path : Text, key : Text }, default = {=} }
 
-let step =
-      λ(common : Step.Common.Type) →
-      λ(`with` : With.Type) →
-        Step.mkUses
-          common
-          Step.Uses::{ uses = "actions/cache@v1", `with` = toMap `with` }
+let Opts =
+      { Type = Step.Common.Type ⩓ { `with` : With.Type }
+      , default = Step.Common.default ∧ { `with` = With.default }
+      }
 
-in  { step, With }
+let step =
+      λ(opts : Opts.Type) →
+        Step.mkUses
+          opts.{ id, `if`, name, env, continue-on-error, timeout-minutes }
+          Step.Uses::{ uses = "actions/cache@v1", `with` = toMap opts.`with` }
+
+in  { step, Opts, With }

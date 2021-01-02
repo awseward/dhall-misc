@@ -21,22 +21,22 @@ let Opts =
 let mkSteps =
       λ(opts : Opts.Type) →
         [ Cache.step
-            Cache.Opts::{
+            Common::{
             , name = Some "Cache choosenim"
             , id = Some "cache-choosenim"
-            , `with` = Cache.With::{
-              , path = "~/.choosenim"
-              , key = "\${{ runner.os }}-choosenim"
-              }
+            }
+            Cache.With::{
+            , path = "~/.choosenim"
+            , key = "\${{ runner.os }}-choosenim"
             }
         , Cache.step
-            Cache.Opts::{
+            Common::{
             , name = Some "Cache choosenim"
             , id = Some "cache-choosenim"
-            , `with` = Cache.With::{
-              , path = "~/.choosenim"
-              , key = "\${{ runner.os }}-choosenim"
-              }
+            }
+            Cache.With::{
+            , path = "~/.choosenim"
+            , key = "\${{ runner.os }}-choosenim"
             }
         , mkUses
             Common::{=}

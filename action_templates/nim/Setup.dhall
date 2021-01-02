@@ -1,5 +1,7 @@
 let GHA = ../../GHA/package.dhall
 
+let Cache = ../actions/Cache.dhall
+
 let mkUses = GHA.Step.mkUses
 
 let Common = GHA.Step.Common
@@ -18,25 +20,23 @@ let Opts =
 
 let mkSteps =
       λ(opts : Opts.Type) →
-        [ mkUses
+        [ Cache.step
             Common::{
             , name = Some "Cache choosenim"
             , id = Some "cache-choosenim"
             }
-            Uses::{
-            , uses = "actions/cache@v1"
-            , `with` = toMap
-                { path = "~/.choosenim", key = "\${{ runner.os }}-choosenim" }
+            Cache.With::{
+            , path = "~/.choosenim"
+            , key = "\${{ runner.os }}-choosenim"
             }
-        , mkUses
+        , Cache.step
             Common::{
             , name = Some "Cache choosenim"
             , id = Some "cache-choosenim"
             }
-            Uses::{
-            , uses = "actions/cache@v1"
-            , `with` = toMap
-                { path = "~/.choosenim", key = "\${{ runner.os }}-choosenim" }
+            Cache.With::{
+            , path = "~/.choosenim"
+            , key = "\${{ runner.os }}-choosenim"
             }
         , mkUses
             Common::{=}

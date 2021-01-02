@@ -30,14 +30,8 @@ let mkSteps =
             , key = "\${{ runner.os }}-choosenim"
             }
         , Cache.step
-            Common::{
-            , name = Some "Cache choosenim"
-            , id = Some "cache-choosenim"
-            }
-            Cache.With::{
-            , path = "~/.choosenim"
-            , key = "\${{ runner.os }}-choosenim"
-            }
+            Common::{ name = Some "Cache nimble", id = Some "cache-nimble" }
+            Cache.With::{ path = "~/.nimble", key = "\${{ runner.os }}-nimble" }
         , mkUses
             Common::{=}
             Uses::{

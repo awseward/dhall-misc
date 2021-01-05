@@ -1,14 +1,30 @@
+let imports = ../imports.dhall
+
+let Prelude = imports.Prelude
+
 let GHA = ../../GHA/package.dhall
 
-let Step = GHA.Step
+let name = "actions/cache"
 
-let With = { Type = { path : Text, key : Text }, default = {=} }
+let version = "v1"
 
-let step =
-      λ(common : Step.Common.Type) →
-      λ(`with` : With.Type) →
-        Step.mkUses
-          common
-          Step.Uses::{ uses = "actions/cache@v1", `with` = toMap `with` }
+let Inputs =
+      { Type = { path : Text, key : Text, restore-keys : Optional Text }
+      , default.restore-keys = None Text
+      }
 
-in  { step, With }
+let inputsToMap =
+      λ(inputs : Inputs.Type) →
+        let homogenized =
+              inputs ⫽ { path = Some inputs.path, key = Some inputs.key }
+
+        in  Prelude.Map.unpackOptionals Text Text (toMap homogenized)
+
+let mkStep =
+      GHA.actions.mkStep
+        name
+        version
+        Inputs.Type
+        (λ(inputs : Inputs.Type) → inputsToMap inputs)
+
+in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }

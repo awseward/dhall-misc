@@ -8,12 +8,13 @@ let name = "actions/create-release"
 
 let version = "v1"
 
+let Body = < text : Text | path : Text >
+
 let Inputs =
       { Type =
           { tag_name : Text
           , release_name : Text
-          , body : Optional Text
-          , body_path : Optional Text
+          , body : Body
           , draft : Optional Bool
           , prerelease : Optional Bool
           , commitish : Optional Text
@@ -21,9 +22,7 @@ let Inputs =
           , repo : Optional Text
           }
       , default =
-        { body = None Text
-        , body_path = None Text
-        , draft = None Bool
+        { draft = None Bool
         , prerelease = None Bool
         , commitish = None Text
         , owner = None Text
@@ -48,6 +47,15 @@ let inputsToMap =
                 , draft = boolMapShow inputs.draft
                 , prerelease = boolMapShow inputs.prerelease
                 }
+              ⫽ merge
+                  { text =
+                      λ(body : Text) →
+                        { body = Some body, body_path = None Text }
+                  , path =
+                      λ(path : Text) →
+                        { body = None Text, body_path = Some path }
+                  }
+                  inputs.body
 
         in  Prelude.Map.unpackOptionals Text Text (toMap homogenized)
 
@@ -58,4 +66,4 @@ let mkStep =
         Inputs.Type
         (λ(inputs : Inputs.Type) → inputsToMap inputs)
 
-in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }
+in  { mkStep, Inputs, Body } ⫽ GHA.Step.{ Common }

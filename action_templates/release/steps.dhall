@@ -41,9 +41,10 @@ let mkSteps =
                 a.Inputs::{
                 , tag_name = subst "steps.plan.outputs.git_tag"
                 , release_name = subst "steps.plan.outputs.git_tag"
-                , body = Some
-                    "Checksum: `${subst
-                                    "steps.checksum.outputs.tarball_checksum"}`"
+                , body =
+                    a.Body.text
+                      "Checksum: `${subst
+                                      "steps.checksum.outputs.tarball_checksum"}`"
                 , draft = Some False
                 , prerelease = Some False
                 }

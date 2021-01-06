@@ -4,4 +4,5 @@
 , Step = ./Step.dhall
 , Workflow = ./Workflow.dhall
 , actions = ./actions.dhall
+, subst = ./subst.dhall
 }

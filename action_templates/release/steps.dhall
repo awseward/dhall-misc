@@ -18,6 +18,8 @@ let fmtCommitMsg =
         ${body}
         ''
 
+let subst = GHA.subst
+
 let mkSteps =
       λ(opts : Opts.Type) →
         [ mkRun
@@ -34,13 +36,14 @@ let mkSteps =
           in  a.mkStep
                 a.Common::{
                 , id = Some "create_release"
-                , env = toMap { GITHUB_TOKEN = "\${{ secrets.GITHUB_TOKEN }}" }
+                , env = toMap { GITHUB_TOKEN = subst "secrets.GITHUB_TOKEN" }
                 }
                 a.Inputs::{
-                , tag_name = "\${{ steps.plan.outputs.git_tag }}"
-                , release_name = "\${{ steps.plan.outputs.git_tag }}"
+                , tag_name = subst "steps.plan.outputs.git_tag"
+                , release_name = subst "steps.plan.outputs.git_tag"
                 , body = Some
-                    "Checksum: `\${{ steps.checksum.outputs.tarball_checksum }}`"
+                    "Checksum: `${subst
+                                    "steps.checksum.outputs.tarball_checksum"}`"
                 , draft = Some False
                 , prerelease = Some False
                 }
@@ -49,30 +52,31 @@ let mkSteps =
           in  a.mkStep
                 a.Common::{
                 , id = Some "upload_tarball"
-                , env = toMap { GITHUB_TOKEN = "\${{ secrets.GITHUB_TOKEN }}" }
+                , env = toMap { GITHUB_TOKEN = subst "secrets.GITHUB_TOKEN" }
                 }
                 a.Inputs::{
                 , asset_content_type = "application/gzip"
-                , asset_name = "\${{ steps.tarball.outputs.tarball_filename }}"
-                , asset_path = "\${{ steps.tarball.outputs.tarball_filepath }}"
-                , upload_url = "\${{ steps.create_release.outputs.upload_url }}"
+                , asset_name = subst "steps.tarball.outputs.tarball_filename"
+                , asset_path = subst "steps.tarball.outputs.tarball_filepath"
+                , upload_url = subst "steps.create_release.outputs.upload_url"
                 }
         , let a = ../mislav/BumpHomebrewFormula.dhall
 
           in  a.mkStep
                 a.Common::{
                 , env = toMap
-                    { COMMITTER_TOKEN = "\${{ secrets.COMMITTER_TOKEN }}" }
+                    { COMMITTER_TOKEN = subst "secrets.COMMITTER_TOKEN" }
                 }
                 a.Inputs::{
                 , base-branch = Some opts.base-branch
                 , commit-message = Some
                     ( fmtCommitMsg
                         "{{formulaName}} {{version}}"
-                        "Sourced from \${{ steps.create_release.outputs.html_url }}."
+                        "Sourced from ${subst
+                                          "steps.create_release.outputs.html_url"}."
                     )
                 , download-url = Some
-                    "\${{ steps.upload_tarball.outputs.browser_download_url }}"
+                    (subst "steps.upload_tarball.outputs.browser_download_url")
                 , formula-name = Some opts.formula-name
                 , homebrew-tap = Some opts.homebrew-tap
                 }

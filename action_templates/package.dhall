@@ -1,5 +1,6 @@
 { actions/Cache = ./actions/Cache.dhall
 , actions/Checkout = ./actions/Checkout.dhall
+, brpaz/Hadolint = ./brpaz/hadolint.dhall
 , nim/Assets = ./nim/Assets.dhall
 , nim/Build = ./nim/Build.dhall
 , nim/Docs = ./nim/Docs.dhall

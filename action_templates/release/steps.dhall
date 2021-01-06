@@ -6,6 +6,10 @@ let mkRun = Step.mkRun
 
 let mkUses = Step.mkUses
 
+let CreateRelease = ../actions/CreateRelease.dhall
+
+let UploadReleaseAsset = ../actions/UploadReleaseAsset.dhall
+
 let Opts =
       { Type = { formula-name : Text, homebrew-tap : Text, base-branch : Text }
       , default.base-branch = "master"
@@ -31,35 +35,29 @@ let mkSteps =
         , mkRun
             Step.Common::{ id = Some "checksum", name = Some "Record checksum" }
             ./run/checksum.sh as Text
-        , mkUses
-            Step.Common::{
+        , CreateRelease.mkStep
+            CreateRelease.Common::{
             , id = Some "create_release"
             , env = toMap { GITHUB_TOKEN = "\${{ secrets.GITHUB_TOKEN }}" }
             }
-            Step.Uses::{
-            , uses = "actions/create-release@v1"
-            , `with` = toMap
-                { tag_name = "\${{ steps.plan.outputs.git_tag }}"
-                , release_name = "\${{ steps.plan.outputs.git_tag }}"
-                , body =
-                    "Checksum: `\${{ steps.checksum.outputs.tarball_checksum }}`"
-                , draft = "false"
-                , prerelease = "false"
-                }
+            CreateRelease.Inputs::{
+            , tag_name = "\${{ steps.plan.outputs.git_tag }}"
+            , release_name = "\${{ steps.plan.outputs.git_tag }}"
+            , body = Some
+                "Checksum: `\${{ steps.checksum.outputs.tarball_checksum }}`"
+            , draft = Some False
+            , prerelease = Some False
             }
-        , mkUses
-            Step.Common::{
+        , UploadReleaseAsset.mkStep
+            UploadReleaseAsset.Common::{
             , id = Some "upload_tarball"
             , env = toMap { GITHUB_TOKEN = "\${{ secrets.GITHUB_TOKEN }}" }
             }
-            Step.Uses::{
-            , uses = "actions/upload-release-asset@v1"
-            , `with` = toMap
-                { asset_content_type = "application/gzip"
-                , asset_name = "\${{ steps.tarball.outputs.tarball_filename }}"
-                , asset_path = "\${{ steps.tarball.outputs.tarball_filepath }}"
-                , upload_url = "\${{ steps.create_release.outputs.upload_url }}"
-                }
+            UploadReleaseAsset.Inputs::{
+            , asset_content_type = "application/gzip"
+            , asset_name = "\${{ steps.tarball.outputs.tarball_filename }}"
+            , asset_path = "\${{ steps.tarball.outputs.tarball_filepath }}"
+            , upload_url = "\${{ steps.create_release.outputs.upload_url }}"
             }
         , mkUses
             Step.Common::{

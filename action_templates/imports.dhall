@@ -1,8 +1,4 @@
-let List/pkg =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.0.0/Prelude/List/package.dhall sha256:547cd881988c6c5e3673ae80491224158e93a4627690db0196cb5efbbf00d2ba
+let Prelude =
+      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.0.0/Prelude/package.dhall sha256:21754b84b493b98682e73f64d9d57b18e1ca36a118b81b33d0a243de8455814b
 
-in  { List = List/pkg
-    , Map =
-        https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.0.0/Prelude/Map/package.dhall sha256:c6602939eb75ddaf43e75a37e1f27ace97e03685ceb9d77605b4372547f7cfa8
-    , concat = List/pkg.concat
-    }
+in  { Prelude } ⫽ Prelude.{ List, Map } ⫽ Prelude.List.{ concat }

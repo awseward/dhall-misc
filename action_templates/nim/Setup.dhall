@@ -27,13 +27,13 @@ let mkSteps =
             }
             Cache.Inputs::{
             , path = "~/.choosenim"
-            , key = "\${{ runner.os }}-choosenim"
+            , key = "${GHA.subst "runner.os"}-choosenim"
             }
         , Cache.mkStep
             Common::{ name = Some "Cache nimble", id = Some "cache-nimble" }
             Cache.Inputs::{
             , path = "~/.nimble"
-            , key = "\${{ runner.os }}-nimble"
+            , key = "${GHA.subst "runner.os"}-nimble"
             }
         , mkUses
             Common::{=}

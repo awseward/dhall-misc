@@ -1,3 +1,5 @@
+let imports = ./imports.dhall
+
 let Env = ./Env.dhall
 
 let With = ./With.dhall
@@ -68,7 +70,9 @@ let _ =
           , `with` = toMap { answer = "42" }
           }
 
-let export = Step ⫽ { Common, Uses, mkRun, mkUses }
+let concat = imports.Prelude.List.concat Step.Type
+
+let export = Step ⫽ { Common, Uses, mkRun, mkUses, concat }
 
 let _ = assert : export.Uses.default ≡ Uses.default
 

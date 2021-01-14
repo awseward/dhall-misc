@@ -34,9 +34,9 @@ let mkJobs =
           { j0-setup = GHA.Job::{
             , runs-on = [ "ubuntu-latest" ]
             , outputs = toMap
-                { git_tag = subst "steps.plan.outputs.git_tag"
-                , upload_url = subst "steps.create_release.outputs.upload_url"
-                , html_url = subst "steps.create_release.outputs.html_url"
+                { git_tag = Step.substOutput "plan" "git_tag"
+                , upload_url = Step.substOutput "create-release" "upload_url"
+                , html_url = Step.substOutput "create-release" "html_url"
                 }
             , steps =
                 Checkout.plainDo
@@ -50,13 +50,13 @@ let mkJobs =
 
                       in  a.mkStep
                             a.Common::{
-                            , id = Some "create_release"
+                            , id = Some "create-release"
                             , env = toMap
                                 { GITHUB_TOKEN = subst "secrets.GITHUB_TOKEN" }
                             }
                             a.Inputs::{
-                            , tag_name = subst "steps.plan.outputs.git_tag"
-                            , release_name = subst "steps.plan.outputs.git_tag"
+                            , tag_name = Step.substOutput "plan" "git_tag"
+                            , release_name = Step.substOutput "plan" "git_tag"
                             , body = a.Body.text ""
                             , draft = Some False
                             , prerelease = Some False
@@ -95,16 +95,16 @@ let mkJobs =
 
                       in  a.mkStep
                             a.Common::{
-                            , id = Some "upload_tarball"
+                            , id = Some "upload-tarball"
                             , env = toMap
                                 { GITHUB_TOKEN = subst "secrets.GITHUB_TOKEN" }
                             }
                             a.Inputs::{
                             , asset_content_type = "application/gzip"
                             , asset_name =
-                                subst "steps.tarball.outputs.tarball_filename"
+                                Step.substOutput "tarball" "tarball_filename"
                             , asset_path =
-                                subst "steps.tarball.outputs.tarball_filepath"
+                                Step.substOutput "tarball" "tarball_filepath"
                             , upload_url =
                                 GHA.Job.substOutput "j0-setup" "upload_url"
                             }
@@ -128,8 +128,9 @@ let mkJobs =
                                                       "html_url"}."
                                 )
                             , download-url = Some
-                                ( subst
-                                    "steps.upload_tarball.outputs.browser_download_url"
+                                ( Step.substOutput
+                                    "upload-tarball"
+                                    "browser_download_url"
                                 )
                             , formula-name = Some opts.formula-name
                             , homebrew-tap = Some opts.homebrew-tap

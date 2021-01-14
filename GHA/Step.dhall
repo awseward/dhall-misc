@@ -4,6 +4,8 @@ let Env = ./Env.dhall
 
 let With = ./With.dhall
 
+let subst = ./subst.dhall
+
 let Common =
       { Type =
           { id : Optional Text
@@ -72,7 +74,12 @@ let _ =
 
 let concat = imports.Prelude.List.concat Step.Type
 
-let export = Step ⫽ { Common, Uses, mkRun, mkUses, concat }
+let substOutput =
+      λ(stepId : Text) →
+      λ(name : Text) →
+        subst "steps.${stepId}.outputs.${name}"
+
+let export = Step ⫽ { Common, Uses, mkRun, mkUses, concat, substOutput }
 
 let _ = assert : export.Uses.default ≡ Uses.default
 

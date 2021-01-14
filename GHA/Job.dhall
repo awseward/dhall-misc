@@ -10,6 +10,8 @@ let Step = ./Step.dhall
 
 let Strategy = ./Strategy.dhall
 
+let subst = ./subst.dhall
+
 let Job =
       { Type =
           { runs-on : List Text
@@ -34,4 +36,12 @@ let Entry = Map.Entry Text Job.Type
 
 let jobs = imports.Prelude.List.concat Job.Type
 
-in  Job ⫽ { Entry, jobs }
+let substOutput =
+      λ(jobId : Text) → λ(name : Text) → subst "needs.${jobId}.outputs.${name}"
+
+let _ =
+        assert
+      :   substOutput "my-job" "my_output"
+        ≡ "\${{ needs.my-job.outputs.my_output }}"
+
+in  Job ⫽ { Entry, jobs, substOutput }

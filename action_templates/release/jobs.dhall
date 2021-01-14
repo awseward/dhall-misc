@@ -80,7 +80,7 @@ let mkJobs =
                         , id = Some "tarball"
                         , name = Some "Create tarball"
                         , env = toMap
-                            { GIT_TAG = subst "needs.j0-setup.outputs.git_tag"
+                            { GIT_TAG = GHA.Job.substOutput "j0-setup" "git_tag"
                             , PLATFORM_NAME = subst "runner.os"
                             }
                         }
@@ -106,7 +106,7 @@ let mkJobs =
                             , asset_path =
                                 subst "steps.tarball.outputs.tarball_filepath"
                             , upload_url =
-                                subst "needs.j0-setup.outputs.upload_url"
+                                GHA.Job.substOutput "j0-setup" "upload_url"
                             }
                     , let a = ../mislav/BumpHomebrewFormula.dhall
 
@@ -123,8 +123,9 @@ let mkJobs =
                             , commit-message = Some
                                 ( fmtCommitMsg
                                     "{{formulaName}} {{version}}"
-                                    "Sourced from ${subst
-                                                      "needs.j0-setup.outputs.html_url"}."
+                                    "Sourced from ${GHA.Job.substOutput
+                                                      "j0-setup"
+                                                      "html_url"}."
                                 )
                             , download-url = Some
                                 ( subst

@@ -1,0 +1,12 @@
+-- Due to the way that union types differ from record types, this is probably
+-- best-imported in this style:
+--
+--   let OS_ = <package import>
+--
+--   let OS = OS_.Type
+--
+--   let OS/show = OS_.show
+--
+--   etc...
+--
+{ show = ./show.dhall, toJSON = ./toJSON.dhall, Type = ./Type.dhall }

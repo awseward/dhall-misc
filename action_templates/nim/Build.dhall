@@ -8,11 +8,13 @@ let mkRun = GHA.Step.mkRun
 
 let Common = GHA.Step.Common
 
+let OS = GHA.OS.Type
+
 let Setup = ./Setup.dhall
 
 let Opts =
       { Type =
-          { platforms : List Text
+          { platforms : List OS
           , bin : Text
           , nimSetup : Setup.Opts.Type
           , nimbleFlags : Text
@@ -28,11 +30,11 @@ let mkJob =
         , runs-on = opts.platforms
         , steps =
             Checkout.plainDo
-              [ Setup.mkSteps opts.nimSetup
-              , [ run
-                    "nimble --stacktrace:on --linetrace:on ${opts.nimbleFlags} build --accept ${opts.bin}"
-                ]
-              ]
+              (   Setup.mkSteps opts.nimSetup
+                # [ run
+                      "nimble --stacktrace:on --linetrace:on ${opts.nimbleFlags} build --accept ${opts.bin}"
+                  ]
+              )
         }
 
 let mkJobEntry =

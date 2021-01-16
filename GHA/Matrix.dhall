@@ -12,29 +12,14 @@ let JSON = Prelude.JSON
 
 let Map = Prelude.Map
 
-let HostedRunner = ./HostedRunner.dhall
+let OS_ = ./OS/package.dhall
 
-let Text/id = λ(x : Text) → x
+let OS = OS_.Type
 
-let HostedRunner/show
-    : HostedRunner → Text
-    = λ(runner : HostedRunner) →
-        merge
-          { `macos-10.15` = "macos-10.15"
-          , `macos-11.0` = "macos-11.0"
-          , `ubuntu-16.04` = "ubuntu-16.04"
-          , `ubuntu-18.04` = "ubuntu-18.04"
-          , `ubuntu-20.04` = "ubuntu-20.04"
-          , macos-latest = "macos-latest"
-          , other = Text/id
-          , ubuntu-latest = "ubuntu-latest"
-          , windows-2019 = "windows-2019"
-          , windows-latest = "windows-latest"
-          }
-          runner
+let OS/toJSON = OS_.toJSON
 
 let CommonType =
-      { os : List HostedRunner
+      { os : List OS
       , fail-fast : Optional Bool
       , max-parallel : Optional Natural
       , include : List JSON.Type
@@ -49,14 +34,7 @@ let commonToJSONMap
     : CommonType → JSONMap
     = λ(common : CommonType) →
         toMap
-          { os =
-              JSON.array
-                ( Prelude.List.map
-                    HostedRunner
-                    JSON.Type
-                    (λ(os : HostedRunner) → JSON.string (HostedRunner/show os))
-                    common.os
-                )
+          { os = JSON.array (Prelude.List.map OS JSON.Type OS/toJSON common.os)
           , fail-fast =
               merge { None = JSON.null, Some = JSON.bool } common.fail-fast
           , max-parallel =
@@ -70,7 +48,7 @@ let commonToJSONMap
 let Common =
       { Type = CommonType
       , default =
-        { os = [] : List HostedRunner
+        { os = [] : List OS
         , fail-fast = None Bool
         , max-parallel = None Natural
         , include = [] : List JSON.Type
@@ -87,24 +65,14 @@ let mk
 
         let otherMap = Map.map Text (List JSON.Type) JSON.Type JSON.array other
 
-        in  JSON.omitNullFields
-              ( JSON.object
-                  ( Prelude.List.concat
-                      (Map.Entry Text JSON.Type)
-                      [ otherMap, commonMap ]
-                  )
-              )
+        in  JSON.omitNullFields (JSON.object (otherMap # commonMap))
 
 let _ =
         assert
       :   JSON.renderYAML
             ( mk
                 Common::{
-                , os =
-                  [ HostedRunner.macos-latest
-                  , HostedRunner.ubuntu-latest
-                  , HostedRunner.`ubuntu-20.04`
-                  ]
+                , os = [ OS.macos-latest, OS.ubuntu-latest, OS.`ubuntu-20.04` ]
                 , max-parallel = Some 3
                 , include =
                   [ JSON.object

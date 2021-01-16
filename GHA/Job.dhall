@@ -2,6 +2,8 @@ let imports = ./imports.dhall
 
 let Map = imports.Prelude.Map
 
+let OS = (./OS/package.dhall).Type
+
 let Outputs = ./Outputs.dhall
 
 let Service = ./Service.dhall
@@ -14,7 +16,7 @@ let subst = ./subst.dhall
 
 let Job =
       { Type =
-          { runs-on : List Text
+          { runs-on : List OS
           , container : Optional Text
           , services : Map.Type Text Service.Type
           , steps : List Step.Type

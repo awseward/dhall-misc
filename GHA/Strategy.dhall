@@ -1,3 +1,7 @@
+let imports = ./imports.dhall
+
+let JSON = imports.Prelude.JSON
+
 let Matrix = ./Matrix.dhall
 
-in  { Type = { matrix : Matrix.Type }, default.matrix = Matrix::{=}, Matrix }
+in  { Type = { matrix : JSON.Type }, default = {=}, Matrix }

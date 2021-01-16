@@ -67,9 +67,13 @@ let mkJobs =
           , j1-artifacts = GHA.Job::{
             , runs-on = [ subst "matrix.os" ]
             , strategy = Some GHA.Strategy::{
-              , matrix = Strategy.Matrix::{
-                , os = [ HostedRunner.macos-latest, HostedRunner.ubuntu-latest ]
-                }
+              , matrix =
+                  Strategy.Matrix.mk
+                    Strategy.Matrix.Common::{
+                    , os =
+                      [ HostedRunner.macos-latest, HostedRunner.ubuntu-latest ]
+                    }
+                    Strategy.Matrix.otherEmpty
               }
             , needs = [ "j0-setup" ]
             , steps =

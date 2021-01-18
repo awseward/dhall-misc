@@ -73,4 +73,28 @@ let Inputs =
 
 let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON
 
+let _ =
+        assert
+      : let step =
+              mkStep
+                GHA.Step.Common::{=}
+                Inputs::{
+                , body = Body.text "foo"
+                , tag_name = "bar"
+                , release_name = "qux"
+                , prerelease = Some False
+                , draft = Some True
+                }
+
+        let `with` = JSON.omitNullFields (JSON.object step.`with`)
+
+        in    JSON.renderYAML `with`
+            ≡ ''
+              "body": "foo"
+              "draft": true
+              "prerelease": false
+              "release_name": "bar"
+              "tag_name": "bar"
+              ''
+
 in  { mkStep, Inputs, Body } ⫽ GHA.Step.{ Common }

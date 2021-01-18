@@ -88,13 +88,14 @@ let _ =
 
         let `with` = JSON.omitNullFields (JSON.object step.`with`)
 
-        in    JSON.renderYAML `with`
-            ≡ ''
-              "body": "foo"
-              "draft": true
-              "prerelease": false
-              "release_name": "bar"
-              "tag_name": "bar"
-              ''
+        in    assert
+            :   JSON.renderYAML `with`
+              ≡ ''
+                "body": "foo"
+                "draft": true
+                "prerelease": false
+                "release_name": "bar"
+                "tag_name": "bar"
+                ''
 
 in  { mkStep, Inputs, Body } ⫽ GHA.Step.{ Common }

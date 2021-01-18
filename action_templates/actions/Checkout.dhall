@@ -82,12 +82,10 @@ let mkStep =
         Inputs.Type
         (λ(inputs : Inputs.Type) → inputsToMap inputs)
 
-let concatStep = imports.concat Step.Type
-
 let do =
       λ(checkout : Step.Type) →
-      λ(subsequent : List (List Step.Type)) →
-        concatStep [ [ checkout ], concatStep subsequent ]
+      λ(subsequent : List Step.Type) →
+        [ checkout ] # subsequent
 
 let plain = mkStep Step.Common::{=} Inputs::{=}
 

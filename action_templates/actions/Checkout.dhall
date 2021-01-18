@@ -2,6 +2,8 @@ let imports = ../imports.dhall
 
 let Prelude = imports.Prelude
 
+let JSON = Prelude.JSON
+
 let GHA = ../../GHA/package.dhall
 
 let Step = GHA.Step
@@ -41,46 +43,41 @@ let Inputs =
         }
       }
 
-let boolMapShow =
-      Prelude.Optional.map
-        Bool
-        Text
-        ( λ(bool : Bool) →
-            Text/replace "T" "t" (Text/replace "F" "f" (Prelude.Bool.show bool))
-        )
+let orNull = Prelude.Optional.default JSON.Type JSON.null
 
-let _ = assert : boolMapShow (None Bool) ≡ None Text
+let optMapJSON =
+      λ(a : Type) → λ(f : a → JSON.Type) → Prelude.Optional.map a JSON.Type f
 
-let _ = assert : boolMapShow (Some True) ≡ Some "true"
+let optJSON =
+      λ(a : Type) →
+      λ(f : a → JSON.Type) →
+      λ(x : Optional a) →
+        orNull (optMapJSON a f x)
 
-let _ = assert : boolMapShow (Some False) ≡ Some "false"
-
-let naturalMapShow = Prelude.Optional.map Natural Text Natural/show
-
-let _ = assert : naturalMapShow (None Natural) ≡ None Text
-
-let _ = assert : naturalMapShow (Some 5) ≡ Some "5"
-
-let inputsToMap =
+let toJSON =
       λ(inputs : Inputs.Type) →
-        let homogenized =
-                inputs
-              ⫽ { ssh-strict = boolMapShow inputs.ssh-strict
-                , persist-credentials = boolMapShow inputs.persist-credentials
-                , clean = boolMapShow inputs.clean
-                , fetch-depth = naturalMapShow inputs.fetch-depth
-                , lfs = boolMapShow inputs.lfs
-                , submodules = boolMapShow inputs.submodules
-                }
+        let fromText = optJSON Text JSON.string
 
-        in  Prelude.Map.unpackOptionals Text Text (toMap homogenized)
+        let fromBool = optJSON Bool JSON.bool
 
-let mkStep =
-      GHA.actions.mkStep
-        name
-        version
-        Inputs.Type
-        (λ(inputs : Inputs.Type) → inputsToMap inputs)
+        let fromNatural = optJSON Natural JSON.natural
+
+        in  toMap
+              { repository = fromText inputs.repository
+              , ref = fromText inputs.ref
+              , token = fromText inputs.token
+              , ssh-key = fromText inputs.ssh-key
+              , ssh-known-hosts = fromText inputs.ssh-key
+              , ssh-strict = fromBool inputs.ssh-strict
+              , persist-credentials = fromBool inputs.persist-credentials
+              , path = fromText inputs.path
+              , clean = fromBool inputs.clean
+              , fetch-depth = fromNatural inputs.fetch-depth
+              , lfs = fromBool inputs.lfs
+              , submodules = fromBool inputs.submodules
+              }
+
+let mkStep = GHA.actions.mkStep name version Inputs.Type toJSON
 
 let do =
       λ(checkout : Step.Type) →

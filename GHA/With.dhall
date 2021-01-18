@@ -1,7 +1,9 @@
 let imports = ./imports.dhall
 
-let Map = imports.Map
+let JSON = imports.Prelude.JSON
 
-let empty = Map.empty Text Text
+let Map = imports.Prelude.Map
 
-in  { Type = Map.Type Text Text, default = empty, empty }
+let empty = Map.empty Text JSON.Type
+
+in  { Type = Map.Type Text JSON.Type, default = empty, empty }

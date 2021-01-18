@@ -1,3 +1,7 @@
+let imports = ../imports.dhall
+
+let JSON = imports.Prelude.JSON
+
 let GHA = ../../GHA/package.dhall
 
 let Cache = ../actions/Cache.dhall
@@ -39,7 +43,7 @@ let mkSteps =
             Common::{=}
             Uses::{
             , uses = "${opts.setupAction}@${opts.setupActionVersion}"
-            , `with` = toMap { nim-version = "${opts.nimVersion}" }
+            , `with` = toMap { nim-version = JSON.string "${opts.nimVersion}" }
             }
         ]
 

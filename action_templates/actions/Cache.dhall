@@ -2,6 +2,10 @@ let imports = ../imports.dhall
 
 let Prelude = imports.Prelude
 
+let JSON = Prelude.JSON
+
+let Map = Prelude.Map
+
 let GHA = ../../GHA/package.dhall
 
 let name = "actions/cache"
@@ -20,11 +24,10 @@ let inputsToMap =
 
         in  Prelude.Map.unpackOptionals Text Text (toMap homogenized)
 
-let mkStep =
-      GHA.actions.mkStep
-        name
-        version
-        Inputs.Type
-        (λ(inputs : Inputs.Type) → inputsToMap inputs)
+let toJSON =
+      λ(inputs : Inputs.Type) →
+        Map.map Text Text JSON.Type JSON.string (inputsToMap inputs)
+
+let mkStep = GHA.actions.mkStep name version Inputs.Type toJSON
 
 in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }

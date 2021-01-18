@@ -13,21 +13,27 @@ let name = "actions/cache"
 let version = "v1"
 
 let Inputs =
-      { Type = { path : Text, key : Text, restore-keys : Optional Text }
-      , default.restore-keys = None Text
-      }
+      let T = { path : Text, key : Text, restore-keys : Optional Text }
 
-let inputsToMap =
-      λ(inputs : Inputs.Type) →
-        let homogenized =
-              inputs ⫽ { path = Some inputs.path, key = Some inputs.key }
+      let toJSON =
+            λ(inputs : T) →
+              Map.map
+                Text
+                Text
+                JSON.Type
+                JSON.string
+                ( Prelude.Map.unpackOptionals
+                    Text
+                    Text
+                    ( toMap
+                        (   inputs
+                          ⫽ { path = Some inputs.path, key = Some inputs.key }
+                        )
+                    )
+                )
 
-        in  Prelude.Map.unpackOptionals Text Text (toMap homogenized)
+      in  { Type = T, default.restore-keys = None Text, toJSON }
 
-let toJSON =
-      λ(inputs : Inputs.Type) →
-        Map.map Text Text JSON.Type JSON.string (inputsToMap inputs)
-
-let mkStep = GHA.actions.mkStep name version Inputs.Type toJSON
+let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON
 
 in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }

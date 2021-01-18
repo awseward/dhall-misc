@@ -24,6 +24,30 @@ let Inputs =
             , repo : Optional Text
             }
 
+      let j =
+            let opt =
+                  λ(a : Type) →
+                  λ(f : a → JSON.Type) →
+                  λ(x : Optional a) →
+                    merge { None = JSON.null, Some = f } x
+
+            in    JSON
+                ⫽ { boolOpt = opt Bool JSON.bool
+                  , stringOpt = opt Text JSON.string
+                  }
+
+      let jBody =
+            λ(body : Body) →
+              merge
+                { text =
+                    λ(body : Text) →
+                      { body = j.string body, body_path = j.null }
+                , path =
+                    λ(path : Text) →
+                      { body = j.null, body_path = j.string path }
+                }
+                body
+
       in  { Type = T
           , default =
             { draft = None Bool
@@ -34,43 +58,17 @@ let Inputs =
             }
           , toJSON =
               λ(inputs : T) →
-                let bodyOrBodyPath =
-                      merge
-                        { text =
-                            λ(body : Text) →
-                              { body = JSON.string body, body_path = JSON.null }
-                        , path =
-                            λ(path : Text) →
-                              { body = JSON.null, body_path = JSON.string path }
-                        }
-                        inputs.body
-
-                in  toMap
-                      (   bodyOrBodyPath
-                        ⫽ { tag_name = JSON.string inputs.tag_name
-                          , release_name = JSON.string inputs.tag_name
-                          , draft =
-                              merge
-                                { None = JSON.null, Some = JSON.bool }
-                                inputs.draft
-                          , prerelease =
-                              merge
-                                { None = JSON.null, Some = JSON.bool }
-                                inputs.prerelease
-                          , commitish =
-                              merge
-                                { None = JSON.null, Some = JSON.string }
-                                inputs.commitish
-                          , owner =
-                              merge
-                                { None = JSON.null, Some = JSON.string }
-                                inputs.owner
-                          , repo =
-                              merge
-                                { None = JSON.null, Some = JSON.string }
-                                inputs.repo
-                          }
-                      )
+                toMap
+                  (   jBody inputs.body
+                    ⫽ { tag_name = j.string inputs.tag_name
+                      , release_name = j.string inputs.tag_name
+                      , draft = j.boolOpt inputs.draft
+                      , prerelease = j.boolOpt inputs.prerelease
+                      , commitish = j.stringOpt inputs.commitish
+                      , owner = j.stringOpt inputs.owner
+                      , repo = j.stringOpt inputs.repo
+                      }
+                  )
           }
 
 let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON

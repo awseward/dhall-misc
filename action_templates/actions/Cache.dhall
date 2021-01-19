@@ -4,8 +4,6 @@ let Prelude = imports.Prelude
 
 let JSON = Prelude.JSON
 
-let Map = Prelude.Map
-
 let GHA = ../../GHA/package.dhall
 
 let Inputs =

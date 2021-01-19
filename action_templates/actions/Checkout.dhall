@@ -28,6 +28,19 @@ let Inputs =
             , submodules : Optional Bool
             }
 
+      let j =
+            let opt =
+                  λ(a : Type) →
+                  λ(f : a → JSON.Type) →
+                  λ(x : Optional a) →
+                    merge { None = JSON.null, Some = f } x
+
+            in    JSON
+                ⫽ { boolOpt = opt Bool JSON.bool
+                  , naturalOpt = opt Natural JSON.natural
+                  , stringOpt = opt Text JSON.string
+                  }
+
       in  { Type = T
           , default =
             { repository = None Text
@@ -45,40 +58,20 @@ let Inputs =
             }
           , toJSON =
               λ(inputs : T) →
-                let orNull = Prelude.Optional.default JSON.Type JSON.null
-
-                let optMapJSON =
-                      λ(a : Type) →
-                      λ(f : a → JSON.Type) →
-                        Prelude.Optional.map a JSON.Type f
-
-                let optJSON =
-                      λ(a : Type) →
-                      λ(f : a → JSON.Type) →
-                      λ(x : Optional a) →
-                        orNull (optMapJSON a f x)
-
-                let fromText = optJSON Text JSON.string
-
-                let fromBool = optJSON Bool JSON.bool
-
-                let fromNatural = optJSON Natural JSON.natural
-
-                in  toMap
-                      { repository = fromText inputs.repository
-                      , ref = fromText inputs.ref
-                      , token = fromText inputs.token
-                      , ssh-key = fromText inputs.ssh-key
-                      , ssh-known-hosts = fromText inputs.ssh-key
-                      , ssh-strict = fromBool inputs.ssh-strict
-                      , persist-credentials =
-                          fromBool inputs.persist-credentials
-                      , path = fromText inputs.path
-                      , clean = fromBool inputs.clean
-                      , fetch-depth = fromNatural inputs.fetch-depth
-                      , lfs = fromBool inputs.lfs
-                      , submodules = fromBool inputs.submodules
-                      }
+                toMap
+                  { repository = j.stringOpt inputs.repository
+                  , ref = j.stringOpt inputs.ref
+                  , token = j.stringOpt inputs.token
+                  , ssh-key = j.stringOpt inputs.ssh-key
+                  , ssh-known-hosts = j.stringOpt inputs.ssh-key
+                  , ssh-strict = j.boolOpt inputs.ssh-strict
+                  , persist-credentials = j.boolOpt inputs.persist-credentials
+                  , path = j.stringOpt inputs.path
+                  , clean = j.boolOpt inputs.clean
+                  , fetch-depth = j.naturalOpt inputs.fetch-depth
+                  , lfs = j.boolOpt inputs.lfs
+                  , submodules = j.boolOpt inputs.submodules
+                  }
           }
 
 let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON

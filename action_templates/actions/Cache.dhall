@@ -11,22 +11,22 @@ let GHA = ../../GHA/package.dhall
 let Inputs =
       let T = { path : Text, key : Text, restore-keys : Optional Text }
 
+      let j =
+            let opt =
+                  λ(a : Type) →
+                  λ(f : a → JSON.Type) →
+                  λ(x : Optional a) →
+                    merge { None = JSON.null, Some = f } x
+
+            in  JSON ⫽ { stringOpt = opt Text JSON.string }
+
       let toJSON =
             λ(inputs : T) →
-              Map.map
-                Text
-                Text
-                JSON.Type
-                JSON.string
-                ( Prelude.Map.unpackOptionals
-                    Text
-                    Text
-                    ( toMap
-                        (   inputs
-                          ⫽ { path = Some inputs.path, key = Some inputs.key }
-                        )
-                    )
-                )
+              toMap
+                { path = j.string inputs.path
+                , key = j.string inputs.key
+                , restore-keys = j.stringOpt inputs.restore-keys
+                }
 
       in  { Type = T, default.restore-keys = None Text, toJSON }
 

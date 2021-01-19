@@ -1,21 +1,30 @@
 let imports = ../imports.dhall
 
-let Map = imports.Map
+let JSON = imports.Prelude.JSON
 
 let GHA = ../../GHA/package.dhall
 
-let name = "brpaz/hadolint-action"
-
-let version = "v1.2.1"
-
 let Inputs =
-      { Type = { dockerfile : Optional Text }, default.dockerfile = None Text }
+      let T = { dockerfile : Optional Text }
 
-let mkStep =
-      GHA.actions.mkStep
-        name
-        version
-        Inputs.Type
-        (λ(inputs : Inputs.Type) → Map.unpackOptionals Text Text (toMap inputs))
+      let j =
+            let opt =
+                  λ(a : Type) →
+                  λ(f : a → JSON.Type) →
+                  λ(x : Optional a) →
+                    merge { None = JSON.null, Some = f } x
 
-in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }
+            in  JSON ⫽ { stringOpt = opt Text JSON.string }
+
+      in  { Type = T
+          , default.dockerfile = None Text
+          , toJSON =
+              λ(inputs : T) →
+                toMap { dockerfile = j.stringOpt inputs.dockerfile }
+          }
+
+let mkStep/next = GHA.actions.mkStep/next Inputs.Type Inputs.{ toJSON }
+
+let mkStep = mkStep/next "brpaz/hadolint-action" "v1.2.1"
+
+in  { mkStep, mkStep/next, Inputs } ⫽ GHA.Step.{ Common }

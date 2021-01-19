@@ -2,29 +2,34 @@ let imports = ../imports.dhall
 
 let Prelude = imports.Prelude
 
+let JSON = Prelude.JSON
+
 let GHA = ../../GHA/package.dhall
 
-let name = "actions/cache"
-
-let version = "v1"
-
 let Inputs =
-      { Type = { path : Text, key : Text, restore-keys : Optional Text }
-      , default.restore-keys = None Text
-      }
+      let T = { path : Text, key : Text, restore-keys : Optional Text }
 
-let inputsToMap =
-      λ(inputs : Inputs.Type) →
-        let homogenized =
-              inputs ⫽ { path = Some inputs.path, key = Some inputs.key }
+      let j =
+            let opt =
+                  λ(a : Type) →
+                  λ(f : a → JSON.Type) →
+                  λ(x : Optional a) →
+                    merge { None = JSON.null, Some = f } x
 
-        in  Prelude.Map.unpackOptionals Text Text (toMap homogenized)
+            in  JSON ⫽ { stringOpt = opt Text JSON.string }
 
-let mkStep =
-      GHA.actions.mkStep
-        name
-        version
-        Inputs.Type
-        (λ(inputs : Inputs.Type) → inputsToMap inputs)
+      let toJSON =
+            λ(inputs : T) →
+              toMap
+                { path = j.string inputs.path
+                , key = j.string inputs.key
+                , restore-keys = j.stringOpt inputs.restore-keys
+                }
 
-in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }
+      in  { Type = T, default.restore-keys = None Text, toJSON }
+
+let mkStep/next = GHA.actions.mkStep/next Inputs.Type Inputs.{ toJSON }
+
+let mkStep = mkStep/next "actions/cache" "v1"
+
+in  { mkStep, mkStep/next, Inputs } ⫽ GHA.Step.{ Common }

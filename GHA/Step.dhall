@@ -1,5 +1,7 @@
 let imports = ./imports.dhall
 
+let JSON = imports.Prelude.JSON
+
 let Env = ./Env.dhall
 
 let With = ./With.dhall
@@ -64,12 +66,15 @@ let _ =
         assert
       :   mkUses
             Common::{ id = Some "test" }
-            Uses::{ uses = "foo/bar@v1", `with` = toMap { answer = "42" } }
+            Uses::{
+            , uses = "foo/bar@v1"
+            , `with` = toMap { answer = JSON.bool True }
+            }
         ≡ Step::{
           , run = None Text
           , id = Some "test"
           , uses = Some "foo/bar@v1"
-          , `with` = toMap { answer = "42" }
+          , `with` = toMap { answer = JSON.bool True }
           }
 
 let concat = imports.Prelude.List.concat Step.Type

@@ -6,9 +6,9 @@ let JSON = Prelude.JSON
 
 let GHA = ../../GHA/package.dhall
 
-let Body = < text : Text | path : Text >
-
 let Inputs =
+      let Body = < text : Text | path : Text >
+
       let T =
             { tag_name : Text
             , release_name : Text
@@ -32,18 +32,6 @@ let Inputs =
                   , stringOpt = opt Text JSON.string
                   }
 
-      let jBody =
-            λ(body : Body) →
-              merge
-                { text =
-                    λ(body : Text) →
-                      { body = j.string body, body_path = j.null }
-                , path =
-                    λ(path : Text) →
-                      { body = j.null, body_path = j.string path }
-                }
-                body
-
       in  { Type = T
           , default =
             { draft = None Bool
@@ -52,19 +40,32 @@ let Inputs =
             , owner = None Text
             , repo = None Text
             }
+          , Body
           , toJSON =
               λ(inputs : T) →
-                toMap
-                  (   jBody inputs.body
-                    ⫽ { tag_name = j.string inputs.tag_name
-                      , release_name = j.string inputs.tag_name
-                      , draft = j.boolOpt inputs.draft
-                      , prerelease = j.boolOpt inputs.prerelease
-                      , commitish = j.stringOpt inputs.commitish
-                      , owner = j.stringOpt inputs.owner
-                      , repo = j.stringOpt inputs.repo
-                      }
-                  )
+                let Body/toJSON =
+                      λ(body : Body) →
+                        merge
+                          { text =
+                              λ(body : Text) →
+                                { body = j.string body, body_path = j.null }
+                          , path =
+                              λ(path : Text) →
+                                { body = j.null, body_path = j.string path }
+                          }
+                          body
+
+                in  toMap
+                      (   Body/toJSON inputs.body
+                        ⫽ { tag_name = j.string inputs.tag_name
+                          , release_name = j.string inputs.tag_name
+                          , draft = j.boolOpt inputs.draft
+                          , prerelease = j.boolOpt inputs.prerelease
+                          , commitish = j.stringOpt inputs.commitish
+                          , owner = j.stringOpt inputs.owner
+                          , repo = j.stringOpt inputs.repo
+                          }
+                      )
           }
 
 let mkStep/next = GHA.actions.mkStep/next Inputs.Type Inputs.{ toJSON }
@@ -76,7 +77,7 @@ let _ =
             mkStep
               GHA.Step.Common::{=}
               Inputs::{
-              , body = Body.text "foo"
+              , body = Inputs.Body.text "foo"
               , tag_name = "bar"
               , release_name = "qux"
               , prerelease = Some False
@@ -95,4 +96,4 @@ let _ =
               "tag_name": "bar"
               ''
 
-in  { mkStep, mkStep/next, Inputs, Body } ⫽ GHA.Step.{ Common }
+in  { mkStep, mkStep/next, Inputs, Body = Inputs.Body } ⫽ GHA.Step.{ Common }

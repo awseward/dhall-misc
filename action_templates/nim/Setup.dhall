@@ -43,7 +43,7 @@ let mkSteps =
             Common::{=}
             Uses::{
             , uses = "${opts.setupAction}@${opts.setupActionVersion}"
-            , `with` = toMap { nim-version = JSON.string "${opts.nimVersion}" }
+            , `with` = toMap { nim-version = JSON.string opts.nimVersion }
             }
         ]
 

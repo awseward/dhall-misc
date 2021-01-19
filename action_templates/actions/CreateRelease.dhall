@@ -6,10 +6,6 @@ let JSON = Prelude.JSON
 
 let GHA = ../../GHA/package.dhall
 
-let name = "actions/create-release"
-
-let version = "v1"
-
 let Body = < text : Text | path : Text >
 
 let Inputs =
@@ -71,7 +67,9 @@ let Inputs =
                   )
           }
 
-let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON
+let mkStep/next = GHA.actions.mkStep/next Inputs.Type Inputs.{ toJSON }
+
+let mkStep = mkStep/next "actions/create-release" "v1"
 
 let _ =
       let step =
@@ -97,4 +95,4 @@ let _ =
               "tag_name": "bar"
               ''
 
-in  { mkStep, Inputs, Body } ⫽ GHA.Step.{ Common }
+in  { mkStep, mkStep/next, Inputs, Body } ⫽ GHA.Step.{ Common }

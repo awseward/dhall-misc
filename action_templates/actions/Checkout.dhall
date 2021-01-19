@@ -8,10 +8,6 @@ let GHA = ../../GHA/package.dhall
 
 let Step = GHA.Step
 
-let name = "actions/checkout"
-
-let version = "v2"
-
 let Inputs =
       let T =
             { repository : Optional Text
@@ -74,7 +70,9 @@ let Inputs =
                   }
           }
 
-let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON
+let mkStep/next = GHA.actions.mkStep/next Inputs.Type Inputs.{ toJSON }
+
+let mkStep = mkStep/next "actions/checkout" "v2"
 
 let do =
       λ(checkout : Step.Type) →
@@ -85,4 +83,4 @@ let plain = mkStep Step.Common::{=} Inputs::{=}
 
 let plainDo = do plain
 
-in  { do, plain, plainDo, mkStep, Inputs } ⫽ GHA.Step.{ Common }
+in  { do, plain, plainDo, mkStep, mkStep/next, Inputs } ⫽ GHA.Step.{ Common }

@@ -6,10 +6,6 @@ let JSON = Prelude.JSON
 
 let GHA = ../../GHA/package.dhall
 
-let name = "mislav/bump-homebrew-formula-action"
-
-let version = "v1"
-
 let Inputs =
       let T =
             { base-branch : Optional Text
@@ -41,6 +37,8 @@ let Inputs =
                   }
           }
 
-let mkStep = GHA.actions.mkStep name version Inputs.Type Inputs.toJSON
+let mkStep/next = GHA.actions.mkStep/next Inputs.Type Inputs.{ toJSON }
 
-in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }
+let mkStep = mkStep/next "mislav/bump-homebrew-formula-action" "v1"
+
+in  { mkStep, mkStep/next, Inputs } ⫽ GHA.Step.{ Common }

@@ -8,3 +8,4 @@ jobs:
       - uses: awseward/gh-actions-dhall@0.2.9
         with:
           dhallVersion: 1.37.1
+          typecheck_package_files_only: true

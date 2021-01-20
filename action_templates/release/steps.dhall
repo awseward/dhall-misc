@@ -42,7 +42,7 @@ let mkSteps =
                 , tag_name = subst "steps.plan.outputs.git_tag"
                 , release_name = subst "steps.plan.outputs.git_tag"
                 , body =
-                    a.Body.text
+                    a.Inputs.Body.text
                       "Checksum: `${subst
                                       "steps.checksum.outputs.tarball_checksum"}`"
                 , draft = Some False

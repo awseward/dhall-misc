@@ -57,7 +57,7 @@ let mkJobs =
                           a.Inputs::{
                           , tag_name = Step.substOutput "plan" "git_tag"
                           , release_name = Step.substOutput "plan" "git_tag"
-                          , body = a.Body.text ""
+                          , body = a.Inputs.Body.text ""
                           , draft = Some False
                           , prerelease = Some False
                           }

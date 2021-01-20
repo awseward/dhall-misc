@@ -6,7 +6,7 @@ in    { mkStep =
           GHA.actions.mkStep/next
             Inputs.Type
             Inputs.{ toJSON }
-            "upload-release-asset"
+            "actions/upload-release-asset"
             "v1"
       , Inputs
       }

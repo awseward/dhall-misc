@@ -15,7 +15,7 @@ jobs:
 
           readonly tag_name="$(date -u +%Y%m%d%H%M%S)"
 
-          echo git config user.name 'github-actions'
-          echo git config user.email 'github-actions@github.com'
-          echo git tag "${tag_name}"
-          echo git push origin "${tag_name}"
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+          git tag "${tag_name}"
+          git push origin "${tag_name}"

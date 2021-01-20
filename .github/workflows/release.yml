@@ -1,0 +1,21 @@
+name: CI
+on:
+  - push
+branches:
+  - master
+jobs:
+  dhall:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          #!/usr/bin/env bash
+
+          set -euo pipefail
+
+          readonly tag_name="$(date -u +%Y%m%d%H%M%S)"
+
+          echo git config user.name 'github-actions'
+          echo git config user.email 'github-actions@github.com'
+          echo git tag "${tag_name}"
+          echo git push origin "${tag_name}"

@@ -1,26 +1,27 @@
 let Map = https://prelude.dhall-lang.org/v20.0.0/Map/package.dhall
 
-let JSON =
-      let JSON = https://prelude.dhall-lang.org/v20.0.0/JSON/package.dhall
-
-      in    JSON
-          ⫽ { renderOpt =
-                λ(jOpt : Optional JSON.Type) →
-                  merge
-                    { None = Some "__FIXME__"
-                    , Some = λ(j : JSON.Type) → Some (JSON.render j)
-                    }
-                    jOpt
-            }
+let JSON = https://prelude.dhall-lang.org/v20.0.0/JSON/package.dhall
 
 let Input = { default : Optional JSON.Type, required : Optional Bool }
 
 let renderInput =
       λ(input : Input) →
-        merge
-          { None = JSON.renderOpt input.default
-          , Some = λ(_ : Bool) → JSON.renderOpt input.default
-          }
-          input.required
+        let message =
+              JSON.string
+                ''
+                NOTE: You probably want to change the type of this to `Optional a`,
+                and not provide a default value here of `None a`, where `a` is
+                whatever type seems to make sense for this field.
 
-in  Map.map Text Input (Optional Text) renderInput (./parsed.dhall).inputs
+                TODO: put the description in here maybe
+                ''
+
+        in  merge
+              { None = Some message
+              , Some =
+                  λ(required : Bool) →
+                    if required then None JSON.Type else Some message
+              }
+              input.required
+
+in  Map.map Text Input (Optional JSON.Type) renderInput (./parsed.dhall).inputs

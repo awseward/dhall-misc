@@ -2,18 +2,26 @@ let Map = https://prelude.dhall-lang.org/v20.0.0/Map/package.dhall
 
 let JSON = https://prelude.dhall-lang.org/v20.0.0/JSON/package.dhall
 
-let Input = { default : Optional JSON.Type, required : Optional Bool }
+let Input =
+      { default : Optional JSON.Type
+      , description : Text
+      , required : Optional Bool
+      }
 
 let renderInput =
       λ(input : Input) →
         let message =
               JSON.string
                 ''
+                ===================================================================
                 NOTE: You probably want to change the type of this to `Optional a`,
                 and not provide a default value here of `None a`, where `a` is
                 whatever type seems to make sense for this field.
+                -------------------------------------------------------------------
 
-                TODO: put the description in here maybe
+                Original Description
+                --------------------
+                ${input.description}
                 ''
 
         in  merge

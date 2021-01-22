@@ -1,1 +1,1 @@
-{ sudo : Text }
+{ sudo : Optional Bool }

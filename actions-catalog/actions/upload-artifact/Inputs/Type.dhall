@@ -1,1 +1,5 @@
-{ if-no-files-found : Text, name : Text, path : Text, retention-days : Text }
+{ if-no-files-found : Optional Text
+, name : Optional Text
+, path : Text
+, retention-days : Natural
+}

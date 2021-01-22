@@ -14,11 +14,10 @@ let toJSON
         let j = JSON
 
         in  toMap
-              { _example1 = j.null
-              , _example2 =
-                  j.string "inputs.something, but not in a literal like this"
-              , _example3 =
-                  j.stringOpt (Some "j here is an extendsion on Prelude.JSON")
+              { if-no-files-found = j.stringOpt inputs.if-no-files-found
+              , name = j.stringOpt inputs.name
+              , path = j.string inputs.path
+              , retention-days = j.natural inputs.retention-days
               }
 
 in  toJSON

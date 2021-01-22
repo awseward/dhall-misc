@@ -17,17 +17,26 @@ cp -v -R .util/template/* "${name}"
 
 .util/fmt_package.sh "${owner}" "${action}" "${tag}" > "${name}/package.dhall"
 
-readonly tmp_action_yml="$(mktemp)"
-readonly type_file="${name}/Inputs/Type.dhall"
+readonly tmp_dir="$(mktemp -d)"
 
-(
-  echo '{-' \
-    && curl "https://raw.githubusercontent.com/${name}/${tag}/action.yml" -s \
-    && echo '-}' \
-    && echo '--' \
-    && cat "${type_file}"
-) > "${tmp_action_yml}"
+readonly action_yml_url="https://raw.githubusercontent.com/${name}/${tag}/action.yml"
 
-mv -vf "${tmp_action_yml}" "${type_file}"
+readonly tmp_action_yml="${tmp_dir}/action.yml"
+readonly tmp_action_dhall="${tmp_dir}/action_parsed.dhall"
 
-echo git add -N "${name}"
+curl -s "${action_yml_url}" > "${tmp_action_yml}"
+
+yaml-to-dhall ./.util/action.yml.dhall --records-loose < "${tmp_action_yml}" \
+  > "${tmp_action_dhall}"
+
+# NOTE: This looks a little weird, but it more or less works...
+echo "./.util/fmtInputsDefault.dhall (${tmp_action_dhall}).inputs" \
+  | dhall-to-yaml \
+  | yaml-to-dhall \
+  > "./${name}/Inputs/default.dhall"
+
+# NOTE: This looks a little weird, but it more or less works...
+echo "./.util/fmtInputsType.dhall (${tmp_action_dhall}).inputs" \
+  | dhall-to-yaml \
+  | yaml-to-dhall type \
+  > "./${name}/Inputs/Type.dhall"

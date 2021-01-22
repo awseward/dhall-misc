@@ -1,13 +1,3 @@
-{-
-
-Can be used to generate an actions' `default.dhall`
-
-Usage:
-
-  dhall-to-yaml <<< ./scratch.dhall | yaml-to-dhall
-
--}
---
 let Map = https://prelude.dhall-lang.org/v20.0.0/Map/package.dhall
 
 let JSON = https://prelude.dhall-lang.org/v20.0.0/JSON/package.dhall
@@ -44,6 +34,4 @@ let renderInput =
               }
               input.required
 
-let renderDefaultRecord = Map.map Text Input (Optional JSON.Type) renderInput
-
-in  renderDefaultRecord ((./parsed.dhall).inputs : Inputs)
+in  Map.map Text Input (Optional JSON.Type) renderInput

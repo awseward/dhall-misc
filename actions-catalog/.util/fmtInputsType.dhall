@@ -10,4 +10,57 @@ let Input =
       , required : Optional Bool
       }
 
-in  Map.map Text Input Text (λ(_ : Input) → "")
+let Inputs = Map.Type Text Input
+
+let Map/filter
+    : ∀(k : Type) → ∀(a : Type) → (a → Bool) → Map.Type k a → Map.Type k a
+    = λ(k : Type) →
+      λ(a : Type) →
+      λ(f : a → Bool) →
+      λ(map : Map.Type k a) →
+        Map.unpackOptionals
+          k
+          a
+          ( Map.map
+              k
+              a
+              (Optional a)
+              (λ(x : a) → if f x then Some x else None a)
+              map
+          )
+
+let isRequired
+    : Input → Bool
+    = λ(input : Input) →
+        merge { None = False, Some = λ(b : Bool) → b } input.required
+
+let requiredInputsOnly
+    : Inputs → Inputs
+    = Map/filter Text Input isRequired
+
+let excludeRequiredInputs
+    : Inputs → Inputs
+    = let f = λ(i : Input) → if isRequired i then False else True
+
+      in  Map/filter Text Input f
+
+let fmtInputsType
+    : Inputs → Map.Type Text JSON.Type
+    = λ(inputs : Inputs) →
+        let requiredMap =
+              let filtered = requiredInputsOnly inputs
+
+              let f = λ(input : Input) → JSON.string ""
+
+              in  Map.map Text Input JSON.Type f filtered
+
+        let notRequiredMap =
+              let filtered = excludeRequiredInputs inputs
+
+              let f = λ(input : Input) → JSON.null
+
+              in  Map.map Text Input JSON.Type f filtered
+
+        in  requiredMap # notRequiredMap
+
+in  fmtInputsType

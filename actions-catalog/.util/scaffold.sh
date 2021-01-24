@@ -29,14 +29,24 @@ curl -s "${action_yml_url}" > "${tmp_action_yml}"
 yaml-to-dhall ./.util/action.yml.dhall --records-loose < "${tmp_action_yml}" \
   > "${tmp_action_dhall}"
 
-# NOTE: This looks a little weird, but it more or less works...
-echo "./.util/fmtInputsDefault.dhall (${tmp_action_dhall}).inputs" \
-  | dhall-to-yaml \
-  | yaml-to-dhall \
-  > "./${name}/Inputs/default.dhall"
+( echo -e "{-\n" \
+    && dhall-to-yaml  <<< "./.util/mkLinks.dhall \"${name}\" \"${tag}\"" \
+    && echo -e "\n-} -----" \
 
-# NOTE: This looks a little weird, but it more or less works...
-echo "./.util/fmtInputsType.dhall (${tmp_action_dhall}).inputs" \
-  | dhall-to-yaml \
-  | yaml-to-dhall type \
-  > "./${name}/Inputs/Type.dhall"
+  # NOTE: This looks a little weird, but it more or less works...
+  echo "./.util/fmtInputsDefault.dhall (${tmp_action_dhall}).inputs" \
+    | dhall-to-yaml --preserve-null \
+    | yaml-to-dhall
+
+) > "./${name}/Inputs/default.dhall"
+
+( echo -e "{-\n" \
+    && dhall-to-yaml  <<< "./.util/mkLinks.dhall \"${name}\" \"${tag}\"" \
+    && echo -e "\n-} -----" \
+
+  # NOTE: This looks a little weird, but it more or less works...
+  echo "./.util/fmtInputsType.dhall (${tmp_action_dhall}).inputs" \
+    | dhall-to-yaml --preserve-null \
+    | yaml-to-dhall type
+
+)> "./${name}/Inputs/Type.dhall"

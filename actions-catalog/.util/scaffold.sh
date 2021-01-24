@@ -29,24 +29,41 @@ curl -s "${action_yml_url}" > "${tmp_action_yml}"
 yaml-to-dhall ./.util/action.yml.dhall --records-loose < "${tmp_action_yml}" \
   > "${tmp_action_dhall}"
 
+readonly tmp_default_type="${tmp_dir}/default_type.dhall"
+
+# NOTE: This is a little bonkers, and probably pretty brittle, but it more
+#       or less works...
+echo "./.util/fmtInputsDefault.dhall (${tmp_action_dhall}).inputs" \
+  | dhall-to-yaml --preserve-null \
+  | yaml-to-dhall type \
+  | tail -n+2 \
+  | dhall \
+  > "${tmp_default_type}"
+
+# >&2 cat "${tmp_default_type}"
+
 ( echo -e "{-\n" \
     && dhall-to-yaml  <<< "./.util/mkLinks.dhall \"${name}\" \"${tag}\"" \
-    && echo -e "\n-} -----" \
+    && echo -e "\n-} -----"
 
-  # NOTE: This looks a little weird, but it more or less works...
-  echo "./.util/fmtInputsDefault.dhall (${tmp_action_dhall}).inputs" \
+  echo "./.util/fmtInputsDefault2.dhall (${tmp_action_dhall}).inputs" \
     | dhall-to-yaml --preserve-null \
-    | yaml-to-dhall
+    | yaml-to-dhall "${tmp_default_type}"
 
 ) > "./${name}/Inputs/default.dhall"
 
 ( echo -e "{-\n" \
     && dhall-to-yaml  <<< "./.util/mkLinks.dhall \"${name}\" \"${tag}\"" \
-    && echo -e "\n-} -----" \
+    && echo -e "\n-} -----"
+
+  readonly tmp_required_inputs_type="${tmp_dir}/required_inputs_type.dhall"
 
   # NOTE: This looks a little weird, but it more or less works...
   echo "./.util/fmtInputsType.dhall (${tmp_action_dhall}).inputs" \
     | dhall-to-yaml --preserve-null \
-    | yaml-to-dhall type
+    | yaml-to-dhall type \
+    > "${tmp_required_inputs_type}"
+
+  dhall <<< "${tmp_required_inputs_type} ⩓ ${tmp_default_type}"
 
 )> "./${name}/Inputs/Type.dhall"

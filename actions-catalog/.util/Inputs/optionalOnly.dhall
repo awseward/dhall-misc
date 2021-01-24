@@ -8,7 +8,9 @@ let Inputs/Type = ./Type.dhall
 
 let optionalOnly
     : Inputs/Type → Inputs/Type
-    = let f = λ(i : Input.Type) → if Input.required i then False else True
+    = let compose = imports.Prelude.Function.compose Input.Type Bool Bool
+
+      let f = compose Input.required imports.Prelude.Bool.not
 
       in  Map.filter Text Input.Type f
 

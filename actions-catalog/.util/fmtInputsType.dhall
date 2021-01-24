@@ -1,9 +1,3 @@
-{-
-
-TODO: Change this so that maybe we can actually get a few `Optional a` instead
-      of just all `Optional <>`.
-
--} -----
 let imports = ../imports.dhall
 
 let Map = imports.Map
@@ -17,20 +11,12 @@ let Inputs = ./Inputs/package.dhall
 let fmtInputsType
     : Inputs.Type → Map.Type Text JSON.Type
     = λ(inputs : Inputs.Type) →
-        let requiredMap =
-              let filtered = Inputs.requiredOnly inputs
+        let filtered = Inputs.requiredOnly inputs
 
-              let f = λ(input : Input.Type) → JSON.string ""
+        let f = λ(input : Input.Type) → JSON.string ""
 
-              in  Map.map Text Input.Type JSON.Type f filtered
+        in  Map.map Text Input.Type JSON.Type f filtered
 
-        let notRequiredMap =
-              let filtered = Inputs.optionalOnly inputs
-
-              let f = λ(input : Input.Type) → JSON.null
-
-              in  Map.map Text Input.Type JSON.Type f filtered
-
-        in  requiredMap # notRequiredMap
+let _ = assert : "TODO: write test(s)" ≡ "TODO: write test(s)"
 
 in  fmtInputsType

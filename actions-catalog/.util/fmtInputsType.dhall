@@ -10,30 +10,26 @@ let Map = imports.Map
 
 let JSON = imports.JSON
 
-let Input = ./Input/Type.dhall
+let Input = ./Input/package.dhall
 
-let Inputs = ./Inputs/Type.dhall
-
-let requiredInputsOnly = ./Inputs/requiredOnly.dhall
-
-let excludeRequiredInputs = ./Inputs/optionalOnly.dhall
+let Inputs = ./Inputs/package.dhall
 
 let fmtInputsType
-    : Inputs → Map.Type Text JSON.Type
-    = λ(inputs : Inputs) →
+    : Inputs.Type → Map.Type Text JSON.Type
+    = λ(inputs : Inputs.Type) →
         let requiredMap =
-              let filtered = requiredInputsOnly inputs
+              let filtered = Inputs.requiredOnly inputs
 
-              let f = λ(input : Input) → JSON.string ""
+              let f = λ(input : Input.Type) → JSON.string ""
 
-              in  Map.map Text Input JSON.Type f filtered
+              in  Map.map Text Input.Type JSON.Type f filtered
 
         let notRequiredMap =
-              let filtered = excludeRequiredInputs inputs
+              let filtered = Inputs.optionalOnly inputs
 
-              let f = λ(input : Input) → JSON.null
+              let f = λ(input : Input.Type) → JSON.null
 
-              in  Map.map Text Input JSON.Type f filtered
+              in  Map.map Text Input.Type JSON.Type f filtered
 
         in  requiredMap # notRequiredMap
 

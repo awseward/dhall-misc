@@ -10,14 +10,12 @@ let Map = imports.Map
 
 let JSON = imports.JSON
 
-let Input = ./Input/Type.dhall
+let Input = ./Input/package.dhall
 
-let Inputs = ./Inputs/Type.dhall
-
-let optionalOnly = ./Inputs/optionalOnly.dhall
+let Inputs = ./Inputs/package.dhall
 
 let allNull
-    : Inputs → Map.Type Text JSON.Type
-    = Map.map Text Input JSON.Type (λ(_ : Input) → JSON.null)
+    : Inputs.Type → Map.Type Text JSON.Type
+    = Map.map Text Input.Type JSON.Type (λ(_ : Input.Type) → JSON.null)
 
-in  λ(inputs : Inputs) → allNull (optionalOnly inputs)
+in  λ(inputs : Inputs.Type) → allNull (Inputs.optionalOnly inputs)

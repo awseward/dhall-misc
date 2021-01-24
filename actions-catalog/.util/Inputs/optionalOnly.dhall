@@ -2,16 +2,14 @@ let imports = ../../imports.dhall
 
 let Map = imports.Map
 
-let Input = ../Input/Type.dhall
+let Input = ../Input/package.dhall
 
-let required = ../Input/required.dhall
-
-let Inputs = ./Type.dhall
+let Inputs/Type = ./Type.dhall
 
 let optionalOnly
-    : Inputs → Inputs
-    = let f = λ(i : Input) → if required i then False else True
+    : Inputs/Type → Inputs/Type
+    = let f = λ(i : Input.Type) → if Input.required i then False else True
 
-      in  Map.filter Text Input f
+      in  Map.filter Text Input.Type f
 
 in  optionalOnly

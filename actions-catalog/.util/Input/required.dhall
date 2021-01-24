@@ -1,8 +1,8 @@
-let Input = ./Type.dhall
+let Input/Type = ./Type.dhall
 
 let isRequired
-    : Input → Bool
-    = λ(input : Input) →
+    : Input/Type → Bool
+    = λ(input : Input/Type) →
         merge { None = False, Some = λ(b : Bool) → b } input.required
 
 in  isRequired

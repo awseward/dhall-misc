@@ -9,3 +9,30 @@ jobs:
         with:
           dhallVersion: 1.37.1
           typecheck_package_files_only: true
+  test-actions-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          readonly dhall_ver='1.37.1'
+          readonly dhall_json_ver='1.7.4'
+          readonly dhall_yaml_ver='1.2.4'
+
+          readonly dhall_tar="dhall-${dhall_ver}-x86_64-linux.tar.bz2"
+          wget "https://github.com/dhall-lang/dhall-haskell/releases/download/${dhall_ver}/${dhall_tar}" \
+            && tar -xjvf "./${dhall_tar}" \
+            && rm -rvf "./${dhall_tar}"
+          readonly dhall_json_tar="dhall-json-${dhall_json_ver}-x86_64-linux.tar.bz2"
+          wget "https://github.com/dhall-lang/dhall-haskell/releases/download/${dhall_ver}/${dhall_json_tar}" \
+            && tar -xjvf "./${dhall_json_tar}" \
+            && rm -rvf "./${dhall_json_tar}"
+          readonly dhall_yaml_tar="dhall-yaml-${dhall_yaml_ver}-x86_64-linux.tar.bz2"
+          wget "https://github.com/dhall-lang/dhall-haskell/releases/download/${dhall_ver}/${dhall_yaml_tar}" \
+            && tar -xjvf "./${dhall_yaml_tar}" \
+            && rm -rvf "./${dhall_yaml_tar}"
+          PATH="${PATH}:$(pwd)/bin"; export PATH
+
+          cd actions-catalog/ && .util/test.sh

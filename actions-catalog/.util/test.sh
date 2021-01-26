@@ -1,34 +1,73 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # NOTE: Meant to be called from the root of `actions-catalog/`, _not_ from
 #       inside `.util/` itself
 
-readonly action_yaml='
+
+# | required | default_specified | type             | default_record_value | case |
+# |---------:|------------------:|------------------|----------------------|-----:|
+# |          |                   |                  |                      |      |
+# | ~~ General ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ |
+# | -- (F)   | T                 | Optional a       | None a               | 1    |
+# | -- (F)   | F                 | Optional <>      | None <>              | 2    |
+# | T        | T                 | --               | --                   | --   |
+# | T        | F                 | Text             | --                   | 3    |
+# | F        | T                 | Optional a       | None a               | 4    |
+# | F        | F                 | Optional <>      | None <>              | 5    |
+# |          |                   |                  |                      |      |
+# | ~~ Specifics ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ |
+# | F        | T                 | Optional Bool    | None Bool            | 6    |
+# | F        | T                 | Optional Text    | None Text            | 7    |
+# | F        | T                 | Optional Natural | None Natural         | 8    |
+# | F        | T                 | Optional Integer | None Integer         | 9    |
+# |          |                   |                  |                      |      |
+
+readonly action_yaml="
   inputs:
-    reqd:
-      required: true
-    optl-natural:
-      required: false
-      default: 5
-    optl-implicit-bool:
+    case_1:
       default: true
-    optl-any:
+    case_2: {}
+    case_3:
+      required: true
+    case_4:
       required: false
-  unrelated: {}
-'
+      default: 42
+    case_5:
+      required: false
+    case_6:
+      required: false
+      default: true
+    case_7:
+      required: false
+      default: foobar
+    case_8:
+      required: false
+      default: 123
+    case_9:
+      required: false
+      default: -8
+  other: {}
+"
 
 _test_default() {
   echo "Checking 'default' inference..."
 
   # shellcheck disable=SC2016
   local -r expected='
-    { optl-any = None <>
-    , optl-implicit-bool = None Bool
-    , optl-natural = None Natural
+    { case_1 = None Bool
+    , case_2 = None <>
 
-    -- note that `reqd` is not present; it should not be included in the inferred
-    -- default record
+    -- note that `case_3` is not present; it should not be included in the
+    -- inferred default record
 
+    , case_4 = None Natural
+    , case_5 = None <>
+    , case_6 = None Bool
+    , case_7 = None Text
+    , case_8 = None Natural
+    , case_9 = None Integer
     }
   '
   local -r actual="$(./.util/infer_default.sh "${tmp_dir}")"
@@ -43,10 +82,15 @@ _test_type() {
 
   # shellcheck disable=SC2016
   local -r valid_instance='
-    { optl-any = None <>
-    , optl-implicit-bool = None Bool
-    , optl-natural = None Natural
-    , reqd = ""
+    { case_1 = None Bool
+    , case_2 = None <>
+    , case_3 = ""
+    , case_4 = None Natural
+    , case_5 = None <>
+    , case_6 = None Bool
+    , case_7 = None Text
+    , case_8 = None Natural
+    , case_9 = None Integer
     }
   '
 

@@ -30,9 +30,7 @@ let mkJob =
         , steps =
             Checkout.plainDo
               (   Setup.mkSteps opts.nimSetup
-                # [ run "nimble ${opts.nimbleFlags} install --accept"
-                  , run "nimble docs"
-                  ]
+                # [ run "nimble ${opts.nimbleFlags} docs" ]
               )
         }
 

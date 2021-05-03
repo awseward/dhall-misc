@@ -37,7 +37,10 @@ let mkSteps =
             Common::{ name = Some "Cache nimble", id = Some "cache-nimble" }
             Cache.Inputs::{
             , path = "~/.nimble"
-            , key = "${GHA.subst "runner.os"}-nimble"
+            , key =
+                let hashFn = "hashFiles('**/*.nimble')"
+
+                in  "${GHA.subst "runner.os"}-nimble-${GHA.subst hashFn}"
             }
         , mkUses
             Common::{=}

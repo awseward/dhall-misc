@@ -30,8 +30,7 @@ let mkJob =
         , steps =
             Checkout.plainDo
               (   Setup.mkSteps opts.nimSetup
-                # [ run "nimble install --accept nimassets"
-                  , run "nimble ${opts.nimbleFlags} assets"
+                # [ run "nimble ${opts.nimbleFlags} assets"
                   , run "git diff --exit-code --color"
                   ]
               )

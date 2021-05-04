@@ -7,7 +7,7 @@ in    { mkStep =
             Inputs.Type
             Inputs.{ toJSON }
             "actions/cache"
-            "v1"
+            "v2"
       , Inputs
       }
     ⫽ GHA.Step.{ Common }

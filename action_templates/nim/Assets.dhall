@@ -1,3 +1,5 @@
+let imports = ../imports.dhall
+
 let Checkout = ../actions/Checkout.dhall
 
 let GHA = ../../GHA/package.dhall
@@ -21,7 +23,10 @@ let Opts =
       , default = { nimSetup = Setup.Opts::{=}, nimbleFlags = "" }
       }
 
-let run = mkRun Common::{=}
+let run =
+      let fixSpaces = imports.Prelude.Text.replace "  " " "
+
+      in  λ(str : Text) → mkRun Common::{=} (fixSpaces str)
 
 let mkJob =
       λ(opts : Opts.Type) →
@@ -42,5 +47,22 @@ let mkJobEntry =
 let mkBasicJob = λ(platforms : List OS) → mkJob Opts::{ platforms }
 
 let mkBasicJobEntry = λ(platforms : List OS) → mkJobEntry Opts::{ platforms }
+
+let _ =
+      let runs
+          : GHA.Job.Type → List Text
+          = λ(job : GHA.Job.Type) →
+              imports.Prelude.List.unpackOptionals
+                Text
+                ( imports.Prelude.List.map
+                    GHA.Step.Type
+                    (Optional Text)
+                    (λ(step : GHA.Step.Type) → step.run)
+                    job.steps
+                )
+
+      in    assert
+          :   runs (mkBasicJob [ OS.ubuntu-latest ])
+            ≡ [ "nimble assets", "git diff --exit-code --color" ]
 
 in  { mkJob, mkJobEntry, mkBasicJob, mkBasicJobEntry, Opts, Setup }

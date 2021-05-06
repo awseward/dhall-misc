@@ -1,3 +1,5 @@
+let imports = ../imports.dhall
+
 let Checkout = ../actions/Checkout.dhall
 
 let GHA = ../../GHA/package.dhall
@@ -22,7 +24,10 @@ let Opts =
       , default = { nimSetup = Setup.Opts::{=}, nimbleFlags = "" }
       }
 
-let run = mkRun Common::{=}
+let run =
+      let fixSpaces = imports.Prelude.Text.replace "  " " "
+
+      in  λ(str : Text) → mkRun Common::{=} (fixSpaces str)
 
 let mkJob =
       λ(opts : Opts.Type) →
@@ -40,5 +45,24 @@ let mkJob =
 let mkJobEntry =
       λ(opts : Opts.Type) →
         { mapKey = "build-${opts.bin}", mapValue = mkJob opts }
+
+let _ =
+      let runs
+          : GHA.Job.Type → List Text
+          = λ(job : GHA.Job.Type) →
+              imports.Prelude.List.unpackOptionals
+                Text
+                ( imports.Prelude.List.map
+                    GHA.Step.Type
+                    (Optional Text)
+                    (λ(step : GHA.Step.Type) → step.run)
+                    job.steps
+                )
+
+      let job = mkJob Opts::{ bin = "foobar", platforms = [ OS.ubuntu-latest ] }
+
+      in    assert
+          :   runs job
+            ≡ [ "nimble --stacktrace:on --linetrace:on build --accept foobar" ]
 
 in  { mkJob, mkJobEntry, Opts, Setup }

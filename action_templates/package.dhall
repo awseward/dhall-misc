@@ -9,6 +9,5 @@
 , nim/Docs = ./nim/Docs.dhall
 , nim/Setup = ./nim/Setup.dhall
 , release = ./release/steps.dhall
-, release/jobs = ./release/jobs.dhall
 , release/steps = ./release/steps.dhall
 }

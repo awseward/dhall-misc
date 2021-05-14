@@ -49,15 +49,25 @@ let mkJobEntry =
 let _ =
       let runs
           : GHA.Job.Type → List Text
-          = λ(job : GHA.Job.Type) →
-              imports.Prelude.List.unpackOptionals
-                Text
-                ( imports.Prelude.List.map
-                    GHA.Step.Type
-                    (Optional Text)
-                    (λ(step : GHA.Step.Type) → step.run)
-                    job.steps
-                )
+          = let steps = λ(j : GHA.Job.Type) → j.steps
+
+            let run = λ(s : GHA.Step.Type) → s.run
+
+            let chooseRuns
+                : List GHA.Step.Type → List Text
+                = imports.Prelude.Function.compose
+                    (List GHA.Step.Type)
+                    (List (Optional Text))
+                    (List Text)
+                    (imports.Prelude.List.map GHA.Step.Type (Optional Text) run)
+                    (imports.Prelude.List.unpackOptionals Text)
+
+            in  imports.Prelude.Function.compose
+                  GHA.Job.Type
+                  (List GHA.Step.Type)
+                  (List Text)
+                  steps
+                  chooseRuns
 
       let job = mkJob Opts::{ bin = "foobar", platforms = [ OS.ubuntu-latest ] }
 

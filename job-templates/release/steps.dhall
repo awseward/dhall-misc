@@ -6,7 +6,7 @@ let mkRun = Step.mkRun
 
 let Opts =
       { Type = { formula-name : Text, homebrew-tap : Text, base-branch : Text }
-      , default.base-branch = "master"
+      , default.base-branch = "main"
       }
 
 let fmtCommitMsg =

@@ -1,5 +1,6 @@
 let Prelude =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.0.0/Prelude/package.dhall sha256:21754b84b493b98682e73f64d9d57b18e1ca36a118b81b33d0a243de8455814b
+      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.2.0/Prelude/package.dhall
+        sha256:a6036bc38d883450598d1de7c98ead113196fe2db02e9733855668b18096f07b
 
 let JSON/extended =
       let JSON = Prelude.JSON

@@ -1,6 +1,7 @@
 { actions = ./actions.dhall
 , handleOS = ./handleOS.dhall
 , Job = ./Job.dhall
+, mkCacheWorkflowOpts = ./mkCacheWorkflowOpts.dhall
 , multiOS = ./multiOS.dhall
 , NonEmpty = (./imports.dhall).Prelude.NonEmpty
 , On = ./On.dhall

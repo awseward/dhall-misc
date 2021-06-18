@@ -14,7 +14,16 @@ let mkRun = Step.mkRun
 
 let subst = GHA.subst
 
-let Opts = ./Opts.dhall
+let Opts
+         -- This might not be ideal but it'll work for now…
+         =
+      let Opts = ./Opts.dhall
+
+      let Type_ = Opts.Type ⩓ { nimVersion : Text }
+
+      let default_ = Opts.default ⫽ { nimVersion = "1.4.2" }
+
+      in  { Type = Type_, default = default_ }
 
 let fmtCommitMsg = ./fmtCommitMsg.dhall
 
@@ -90,7 +99,7 @@ let mkJobs =
                   , steps =
                       Checkout.plainDo
                         (   nim/Setup.mkSteps
-                              nim/Setup.Opts::{ nimVersion = "1.4.2" }
+                              nim/Setup.Opts::opts.{ nimVersion }
                           # [ mkRun
                                 Step.Common::{
                                 , id = Some "tarball"

@@ -6,8 +6,8 @@ in    { mkStep =
           GHA.actions.mkStep/next
             Inputs.Type
             Inputs.{ toJSON }
-            "brpaz/hadolint-action"
-            "v1.2.1"
+            "hadolint/hadolint-action"
+            "v1.5.0"
       , Inputs
       }
     ⫽ GHA.Step.{ Common }

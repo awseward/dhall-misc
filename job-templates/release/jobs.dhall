@@ -14,19 +14,9 @@ let mkRun = Step.mkRun
 
 let subst = GHA.subst
 
-let Opts =
-      { Type = { formula-name : Text, homebrew-tap : Text, base-branch : Text }
-      , default.base-branch = "main"
-      }
+let Opts = ./Opts.dhall
 
-let fmtCommitMsg =
-      λ(header : Text) →
-      λ(body : Text) →
-        ''
-        ${header}
-
-        ${body}
-        ''
+let fmtCommitMsg = ./fmtCommitMsg.dhall
 
 let mkJobs =
       λ(opts : Opts.Type) →

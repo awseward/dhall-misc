@@ -31,14 +31,14 @@ let mkJobs =
       λ(opts : Opts.Type) →
         let outs =
               { create-release = Step.substOutput "create-release"
-              , j0-setup = GHA.Job.substOutput "j0-setup"
+              , setup = GHA.Job.substOutput "setup"
               , plan = Step.substOutput "plan"
               , tarball = Step.substOutput "tarball"
               , upload-tarball = Step.substOutput "upload-tarball"
               }
 
         in  toMap
-              { j0-setup =
+              { setup =
                   --
                   -- Takes care of some upfront clerical things:
                   --
@@ -79,10 +79,10 @@ let mkJobs =
                                 }
                         ]
                   }
-              , j1-artifacts =
+              , artifacts =
                   --
                   -- Creates actual release assets, uploads them to the
-                  -- `Release` created by `j0-setup`, and submits a pull request
+                  -- `Release` created by `setup`, and submits a pull request
                   -- to the appropriate Homebrew tap if applicable
                   --
                   GHA.Job::{
@@ -95,7 +95,7 @@ let mkJobs =
                           }
                           Strategy.Matrix.otherEmpty
                     }
-                  , needs = [ "j0-setup" ]
+                  , needs = [ "setup" ]
                   , steps =
                       Checkout.plainDo
                         (   nim/Setup.mkSteps
@@ -105,7 +105,7 @@ let mkJobs =
                                 , id = Some "tarball"
                                 , name = Some "Create tarball"
                                 , env = toMap
-                                    { GIT_TAG = outs.j0-setup "git_tag"
+                                    { GIT_TAG = outs.setup "git_tag"
                                     , PLATFORM_NAME = subst "runner.os"
                                     }
                                 }
@@ -132,7 +132,7 @@ let mkJobs =
                                         outs.tarball "tarball_filename"
                                     , asset_path =
                                         outs.tarball "tarball_filepath"
-                                    , upload_url = outs.j0-setup "upload_url"
+                                    , upload_url = outs.setup "upload_url"
                                     }
                             , let a = ../mislav/BumpHomebrewFormula.dhall
 
@@ -149,7 +149,7 @@ let mkJobs =
                                     , commit-message = Some
                                         ( fmtCommitMsg
                                             "{{formulaName}} {{version}}"
-                                            "Sourced from ${outs.j0-setup
+                                            "Sourced from ${outs.setup
                                                               "html_url"}."
                                         )
                                     , download-url = Some

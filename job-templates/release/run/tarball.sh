@@ -2,7 +2,9 @@
 
 set -euo pipefail
 
-TARBALL_FILENAME="$( ./_build_release_tarball.sh "${GIT_TAG}" "$( tr '[:upper:]' '[:lower:]' <<< "${PLATFORM_NAME}" )" )"
+_build="${BUILD_RELEASE_TARBALL:-./_build_release_tarball.sh}"
+
+TARBALL_FILENAME="$( "${_build}" "${GIT_TAG}" "$( tr '[:upper:]' '[:lower:]' <<< "${PLATFORM_NAME}" )" )"
 ls -lah
 export TARBALL_FILENAME
 export TARBALL_FILEPATH="./${TARBALL_FILENAME}"

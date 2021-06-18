@@ -23,10 +23,11 @@ let subst = GHA.subst
 let mkSteps =
       λ(opts : Opts.Type) →
         let outs =
-              { plan = Step.substOutput "plan"
+              { checksum = Step.substOutput "checksum"
               , create_release = Step.substOutput "create_release"
+              , plan = Step.substOutput "plan"
               , tarball = Step.substOutput "tarball"
-              , upload_tarball = Step.substOutput "upload-tarball"
+              , upload_tarball = Step.substOutput "upload_tarball"
               }
 
         in  [ mkRun

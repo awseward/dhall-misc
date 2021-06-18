@@ -31,9 +31,9 @@ let fmtCommitMsg =
 let mkJobs =
       λ(opts : Opts.Type) →
         let outs =
-              { plan = Step.substOutput "plan"
-              , create-release = Step.substOutput "create-release"
+              { create-release = Step.substOutput "create-release"
               , j0-setup = GHA.Job.substOutput "j0-setup"
+              , plan = Step.substOutput "plan"
               , tarball = Step.substOutput "tarball"
               , upload-tarball = Step.substOutput "upload-tarball"
               }

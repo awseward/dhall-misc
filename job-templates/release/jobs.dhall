@@ -33,7 +33,7 @@ let mkJobs =
         let outs =
               { plan = Step.substOutput "plan"
               , create-release = Step.substOutput "create-release"
-              , j0-setup = Step.substOutput "j0-setup"
+              , j0-setup = GHA.Job.substOutput "j0-setup"
               , tarball = Step.substOutput "tarball"
               , upload-tarball = Step.substOutput "upload-tarball"
               }
@@ -42,7 +42,7 @@ let mkJobs =
               { j0-setup = GHA.Job::{
                 , runs-on = [ OS.ubuntu-latest ]
                 , outputs = toMap
-                    { git_tag = outs.plan "git-tag"
+                    { git_tag = outs.plan "git_tag"
                     , upload_url = outs.create-release "upload_url"
                     , html_url = outs.create-release "html_url"
                     }

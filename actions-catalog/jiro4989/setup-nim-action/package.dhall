@@ -7,6 +7,6 @@ let mkStep =
         Inputs.Type
         Inputs.{ toJSON }
         "jiro4989/setup-nim-action"
-        "v1.2.3"
+        "v1.3.4"
 
 in  { mkStep, Inputs } ⫽ GHA.Step.{ Common }

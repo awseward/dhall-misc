@@ -18,7 +18,7 @@ let Opts =
       , default =
         { nimVersion = "1.4.2"
         , setupAction = "jiro4989/setup-nim-action"
-        , setupActionVersion = "v1.2.3"
+        , setupActionVersion = "v1.3.4"
         }
       }
 

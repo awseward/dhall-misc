@@ -24,10 +24,10 @@ let mkSteps =
       λ(opts : Opts.Type) →
         let outs =
               { checksum = Step.substOutput "checksum"
-              , create_release = Step.substOutput "create_release"
+              , create-release = Step.substOutput "create-release"
               , plan = Step.substOutput "plan"
               , tarball = Step.substOutput "tarball"
-              , upload_tarball = Step.substOutput "upload_tarball"
+              , upload-tarball = Step.substOutput "upload-tarball"
               }
 
         in  [ mkRun
@@ -49,7 +49,7 @@ let mkSteps =
 
               in  a.mkStep
                     a.Common::{
-                    , id = Some "create_release"
+                    , id = Some "create-release"
                     , env = toMap
                         { GITHUB_TOKEN = subst "secrets.GITHUB_TOKEN" }
                     }
@@ -66,7 +66,7 @@ let mkSteps =
 
               in  a.mkStep
                     a.Common::{
-                    , id = Some "upload_tarball"
+                    , id = Some "upload-tarball"
                     , env = toMap
                         { GITHUB_TOKEN = subst "secrets.GITHUB_TOKEN" }
                     }
@@ -74,7 +74,7 @@ let mkSteps =
                     , asset_content_type = "application/gzip"
                     , asset_name = outs.tarball "tarball_filename"
                     , asset_path = outs.tarball "tarball_filepath"
-                    , upload_url = outs.create_release "upload_url"
+                    , upload_url = outs.create-release "upload_url"
                     }
             , let a = ../mislav/BumpHomebrewFormula.dhall
 
@@ -88,10 +88,10 @@ let mkSteps =
                     , commit-message = Some
                         ( fmtCommitMsg
                             "{{formulaName}} {{version}}"
-                            "Sourced from ${outs.create_release "html_url"}."
+                            "Sourced from ${outs.create-release "html_url"}."
                         )
                     , download-url = Some
-                        (outs.upload_tarball "browser_download_url")
+                        (outs.upload-tarball "browser_download_url")
                     , formula-name = Some opts.formula-name
                     , homebrew-tap = Some opts.homebrew-tap
                     }

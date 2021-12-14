@@ -1,14 +1,10 @@
-let List/map =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.2.0/Prelude/List/map
-        sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
+let Prelude = (../imports.dhall).Prelude
 
-let Text/concatSep =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.2.0/Prelude/Text/concatSep
-        sha256:e4401d69918c61b92a4c0288f7d60a6560ca99726138ed8ebc58dca2cd205e58
+let List/map = Prelude.List.map
 
-let Optional/toList =
-      https://raw.githubusercontent.com/dhall-lang/dhall-lang/v20.2.0/Prelude/Optional/toList
-        sha256:d78f160c619119ef12389e48a629ce293d69f7624c8d016b7a4767ab400344c4
+let Text/concatSep = Prelude.Text.concatSep
+
+let Optional/toList = Prelude.Optional.toList
 
 let CronJob = ../CronJob/Type.dhall
 

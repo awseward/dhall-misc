@@ -1,71 +1,67 @@
 let Prelude = (../imports.dhall).Prelude
 
-let List/filter = Prelude.List.filter
+let KOptV = Prelude.Map.Entry Text (Optional Text)
 
-let List/map = Prelude.List.map
+let KV = Prelude.Map.Entry Text Text
 
-let List/null = Prelude.List.null
+let KOptV/tryGet =
+      λ(kOv : KOptV) →
+        merge
+          { Some = λ(val : Text) → Some { mapKey = kOv.mapKey, mapValue = val }
+          , None = None KV
+          }
+          kOv.mapValue
 
-let Map/Entry = Prelude.Map.Entry
+let KV/concatSep =
+      λ(sep : Text) →
+      λ(kv : KV) →
+        Prelude.Text.concatSep "=" [ kv.mapKey, kv.mapValue ]
 
-let Map/map = Prelude.Map.map
+let asLines = Prelude.Text.concatSep "\n"
 
-let Optional/some = λ(t : Type) → Prelude.Optional.any t (λ(_ : t) → True)
-
-let Optional/default = Prelude.Optional.default
-
-let Text/concatSep = Prelude.Text.concatSep
-
-let KOptV = Map/Entry Text (Optional Text)
-
-let KV = Map/Entry Text Text
+let render =
+      λ(entries : List KV) →
+        asLines (Prelude.List.map KV Text (KV/concatSep "=") entries)
 
 let tryShow =
       λ(map : List KOptV) →
-        let filtered =
-              List/filter
-                KOptV
-                (λ(kOv : KOptV) → Optional/some Text kOv.mapValue)
-                map
+        let entries = Prelude.List.filterMap KOptV KV KOptV/tryGet map
 
-        let someValKVs =
-              Map/map
-                Text
-                (Optional Text)
-                Text
-                (Optional/default Text "")
-                filtered
-
-        in  if    List/null KV someValKVs
+        in  if    Prelude.List.null KV entries
             then  None Text
-            else  let sep = "\n"
+            else  Some (render entries)
 
-                  in  Some
-                        ( Text/concatSep
-                            sep
-                            ( List/map
-                                KV
-                                Text
-                                ( λ(kv : KV) →
-                                    Text/concatSep
-                                      "="
-                                      [ kv.mapKey, kv.mapValue ]
-                                )
-                                someValKVs
-                            )
-                        )
+let show = λ(map : List KOptV) → Prelude.Optional.default Text "" (tryShow map)
 
-let show = λ(map : List KOptV) → Optional/default Text "" (tryShow map)
+let _example0 =
+      let _ =
+              assert
+            :   KOptV/tryGet { mapKey = "foo", mapValue = Some "this_is_foo" }
+              ≡ Some { mapKey = "foo", mapValue = "this_is_foo" }
+
+      let _ =
+              assert
+            : KOptV/tryGet { mapKey = "bar", mapValue = None Text } ≡ None KV
+
+      in  <>
 
 let _example =
-      let map = toMap { FOO = Some "this_is_foo", bar = None Text }
+      let map =
+            toMap
+              { FOO = Some "this_is_foo"
+              , bar = None Text
+              , HELLO = Some "world"
+              }
 
-      let expected = "FOO=this_is_foo"
+      let expected =
+            ''
+            FOO=this_is_foo
+            HELLO=world''
 
       let _ = assert : tryShow map ≡ Some expected
 
       let _ = assert : show map ≡ expected
 
-      in  {}
+      in  <>
 
 in  { tryShow }

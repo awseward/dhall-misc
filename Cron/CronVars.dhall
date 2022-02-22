@@ -6,14 +6,11 @@ let List/map = Prelude.List.map
 
 let List/null = Prelude.List.null
 
-let Map/Entry = Prelude.Map.entry
+let Map/Entry = Prelude.Map.Entry
 
 let Map/map = Prelude.Map.map
 
-let Optional/some =
-      let Optional/any = Prelude.Optional.any
-
-      in  λ(t : Type) → λ(a : Optional t) → Optional/any t (λ(_ : t) → True) a
+let Optional/some = λ(t : Type) → Prelude.Optional.any t (λ(_ : t) → True)
 
 let Optional/default = Prelude.Optional.default
 
